@@ -1,0 +1,7 @@
+<form action="/shops/<%=shopList.id%>" method = 'POST'>
+<% console.log(shopList); %>
+    <input type="hidden" id="<%= shopList.id %>">
+    Shop name: <input type="text" name="name" value = "<%= shopList.name %>">
+    Shop city: <input type="text" name="city" value="<%= shopList.city %>">
+    <button type='submit' value='Submit'>Submit</button>
+</form>

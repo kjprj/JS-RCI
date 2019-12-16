@@ -1,0 +1,22 @@
+  <html>
+   <head>
+       <link rel="stylesheet" href="style.css">
+   </head>
+       
+<h2>List of donuts</h2>
+   <table>
+       <tr><th>Type</th><th>topping</th><th>Price</th></tr>
+<% for(var i = 0; i < donutList.length; i++) { %>
+    <tr>
+        <td><a href="/donuts/<%=donutList[i].id%>"><%= donutList[i].name %></a></td>
+        <td><%= donutList[i].topping %></td>
+        <td class="price">$<%=donutList[i].price.toFixed(2) %></td>
+        <td><a href="/donuts/<%=donutList[i].id%>/edit">Edit</a></td>
+        <td><a href="/donuts/delete/<%=donutList[i].id%>">Delete</a></td>
+    </tr>
+  <% } %>
+</table>
+<br>
+<br>
+<a href="/donuts/new"><input type="button" class="button" name="adddonut" value="Add a donut"></a>
+</html>

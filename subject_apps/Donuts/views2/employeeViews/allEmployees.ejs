@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link href="style.css" rel="stylesheet" type="text/css">
+
+  <link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great|Press+Start+2P" rel="stylesheet">
+
+
+  <title>8-bit Donuts!</title>
+</head>
+
+<body>
+  <div class='container'>
+
+    <h1 id="title">8-bit Donuts!</h1>
+    <div id='navBar'>
+      <a id='navy' href='/shops'>Shops </a> <span id='line'>|</span>
+      <a id='navy' href='/donuts'>Donuts </a><span id='line'>|</span>
+      <a id='navy' href='/employee'>Employees </a>
+    </div>
+    <br><br>
+
+    <% for (var i = 0; i<shops.length; i++){ %>
+      <li>
+
+        <a id='listy' href='/employee/<%= employee[i].id %>'>
+
+          <%=employee[i].name %>
+        </a>
+
+        <form action="/employee/<%= employee[i].id %>/edit" method="get">
+
+          <button>Edit</button>
+        </form>
+
+
+
+        <form action="/employee/delete/<%= employee[i].id %>" method="post">
+
+          <button type="submit">Delete</button>
+        </form>
+
+        <br><br>
+
+      </li>
+      <%}%>
+
+        <a href="/employee/new">
+         <button id = "addy">Add Shop</button>
+      </a> </div>
+
+  </a>
+  </div>
+
+</body>
+
+</html>

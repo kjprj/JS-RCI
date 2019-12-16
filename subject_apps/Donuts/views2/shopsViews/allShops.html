@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link href="style.css" rel="stylesheet" type="text/css">
+
+  <link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great|Press+Start+2P" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+
+  <title>8-bit Donuts!</title>
+</head>
+
+<body>
+  <div class='container'>
+
+    <h1 id="title">8-bit Donuts!</h1>
+    <div id='navBar'>
+      <a id='navy' href='/shops'>Shops </a> <span id='line'>|</span>
+      <a id='navy' href='/donuts'>Donuts </a><span id='line'>|</span>
+      <a id='navy' href='/employee'>Employees </a>
+    </div>
+    <br><br>
+
+    <% for (var i = 0; i<shops.length; i++){ %>
+      <li>
+
+        <a id='listy' href='/shops/<%= shops[i].id %>'>
+
+          <%=shops[i].name %>
+        </a>
+
+
+
+
+        <form action="/shops/<%= shops[i].id %>/edit" method="get">
+	  <script> console.log("test");</script>
+          <button class="btn btn-info">Edit</button>
+        </form>
+
+
+
+        <form action="/shops/delete/<%= shops[i].id %>" method="post">
+
+          <button class="btn btn-danger" type="submit">Delete</button>
+        </form>
+
+        <br><br>
+
+      </li>
+      <%}%>
+
+        <a href="/shops/new">
+         <button class="btn btn-info" id = "addy">Add Shop</button>
+      </a> </div>
+
+  </a>
+  </div>
+
+</body>
+
+</html>

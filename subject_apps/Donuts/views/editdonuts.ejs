@@ -1,0 +1,7 @@
+<form action="/donuts/<%=donutList.id%>" method = 'POST'>
+<% console.log(donutList); %>
+    <input type="hidden" id="<%= donutList.id %>">
+    Donut name: <input type="text" name="name" value = "<%= donutList.name %>">
+    Donut Topping: <input type="text" name="topping" value="<%= donutList.city %>">
+    <button type='submit' value='Submit'>Submit</button>
+</form>

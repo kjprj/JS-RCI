@@ -1,0 +1,113 @@
+//add new employee
+$(document).on('click', '.employee-add', function() {
+  const $newEmployeeFirstName = $('#newEmployeeFirstName').val();
+  const $newEmployeeLastName = $('#newEmployeeLastName').val();
+  const $favorite_donut = $('#favorite_donut').val();
+  const $shop_id = $('#shop_id').val();
+  const payload = {
+    first_name: $newEmployeeFirstName,
+    last_name: $newEmployeeLastName,
+    favorite_donut: $favorite_donut,
+      shop_id:$shop_id
+  };
+  $.ajax({
+    type: 'POST',
+    url: 'http://127.0.0.1:8999/employees',
+    data: payload
+  })
+  .done((data) => {
+    location.reload();
+  })
+  .fail((err) => {
+    console.log(err);
+  });
+});
+
+//fill in edit employee modal
+$(document).on('click', '.employee-edit', function() {
+  const $this = $(this);
+  const employeeID = $this.attr('data-id');
+  const first_name = $this.attr('data-first_name');
+  const last_name = $this.attr('data-last_name');
+  const email = $this.attr('data-email');
+  $('#update-employee-first_name').val(first_name);
+  $('#update-employee-last_name').val(last_name);
+  $('#update-employee-email').val(email);
+  $('#update-employee-id').val(employeeID);
+});
+
+// submit edit employee modal form
+$(document).on('submit', '#modal-employee-form', function(event) {
+  event.preventDefault();
+  const $first_name = $('#update-employee-first_name').val();
+  const $last_name = $('#update-employee-last_name').val();
+  const $favorite_donut = $('#favorite_donut').val();
+  const $shop_id = $('#shop_id').val();
+  const payload = {
+    first_name: $first_name,
+    last_name: $last_name,
+    favorite_donut: $favorite_donut,
+      shop_id:$shop_id
+  };
+  $.ajax({
+    type: 'PUT',
+    url: 'http://127.0.0.1:8999/employees/' + employeeID,
+    data: payload
+  })
+  .done((data) => {
+    $('#myModal').modal('toggle');
+    location.reload();
+  })
+  .fail((err) => {
+    console.log(err);
+  });
+});
+
+// delete employee button
+$(document).on('click', '.employee-delete', function() {
+  const answer = confirm('Are you sure?');
+  if (answer) {
+    const $this = $(this);
+    const employeeID = $this.attr('data-id');
+    $.ajax({
+      type: 'DELETE',
+      url: `http://127.0.0.1:8999/employees/${employeeID}`
+    })
+    .done((data) => {
+      location.reload();
+    })
+    .fail((err) => {
+      console.log(err);
+    });
+  }
+});
+// submit edit donut modal form
+$(document).on('submit', '#modal-donut-form', function(event) {
+    const $this = $(this);
+    const employeeID = $this.attr('data-id');
+  $.ajax({
+    type: 'GET',
+    url: 'http://127.0.0.1:8999/employees/' + employeeID,
+    data: payload
+  })
+  .done((data) => {
+    location.reload();
+  })
+  .fail((err) => {
+    console.log(err);
+  });
+});
+$(document).on('submit', '#modal-donut-form', function(event) {
+  event.preventDefault();
+  $.ajax({
+    type: 'GET',
+    url: 'http://127.0.0.1:8999/employees/',
+    data: payload
+  })
+  .done((data) => {
+    location.reload();
+  })
+  .fail((err) => {
+    console.log(err);
+  });
+});

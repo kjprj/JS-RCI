@@ -1,0 +1,19 @@
+<% var shop = shopDetails %>
+<% var emp = empDetails %>
+
+<h2><%= shop[0].name %> in <%= shop[0].city %></h2>
+
+<h3>List of donuts available:</h3>
+<ul>
+    <% for (var i=0; i<shop.length; i++) { %>
+        <li><%=shop[i].donut%></li>
+    <% } %>
+</ul>
+
+<h3>List of employees at this store:</h3>
+
+<ul>
+    <% for (var j = 0; j<emp.length; j++) { %>
+        <li><%=emp[j].first_name + ' ' + emp[j].last_name %>
+     <% } %>
+</ul>

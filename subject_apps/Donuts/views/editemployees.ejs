@@ -1,0 +1,7 @@
+<form action="/employees/<%=employee.id%>" method="POST">
+    <input type="hidden" id="<%= employee.id %>">
+    First Name: <input type="text" name="first_name" value="<%=employee.first_name%>"><br>
+    Last Name: <input type="text" name="last_name" value="<%=employee.last_name%>"><br>
+    Favorite Donut: <input type="text" name="fav_donut" value="<%=employee.fav_donut%>"><br>
+    <button type="submit" name="submit" value="submit">Submit</button>
+</form>

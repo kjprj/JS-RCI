@@ -1,0 +1,10 @@
+<% var donuts = donutDetails %>
+
+<h2><%=donuts[0].donut %>s are sold at the following stores</h2>
+
+<ul>
+<% for (var i = 0; i < donuts.length; i++) {%>
+    <li><%=donuts[i].name + ' in ' + donuts[i].city %></li>
+
+<% } %>
+</ul>

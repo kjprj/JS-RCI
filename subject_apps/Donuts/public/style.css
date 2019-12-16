@@ -1,0 +1,75 @@
+.container{
+  margin: 0px auto;
+  height: 100vh;
+  width: 100vw;
+}
+
+body{
+  background-color: black;
+  background-image: url(donutsss.jpg);
+  background-position: center;
+  background-size:  cover;
+  background-repeat: no-repeat;
+}
+
+#title{
+  text-align: center;
+  color: black;
+  font-family: 'Press Start 2P', cursive;
+font-size: 60px;
+}
+
+#navBar{
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  font-family: 'Press Start 2P', cursive;
+
+}
+
+li{
+  list-style: none;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  list-style-image: url('donuts.png');
+
+}
+
+#listy{
+  text-decoration: none;
+color: black;
+font-size: 30px;
+font-family: 'Press Start 2P', cursive;
+
+}
+
+#listy:hover{
+  opacity: 0.7;
+}
+
+
+#navy{
+  text-decoration: none;
+  color: black;
+  font-size: 20px;
+}
+
+#navy:hover{
+  opacity: 0.7;
+}
+
+#line{
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  font-family: 'Press Start 2P', cursive;
+  color: black;
+  font-size: 20px;
+}
+
+#addy{
+align-items: center;
+margin-left: 528px;
+position: sticky;
+}
