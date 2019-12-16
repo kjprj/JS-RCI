@@ -1,0 +1,51 @@
+[
+  {
+    "id": "GET_brokers_id",
+    "client_params": 901,
+    "server_return": {"id":1,"firstName":"Caroline","lastName":"Kingsley","title":"Senior Broker","phone":"617-244-3672","mobilePhone":"617-244-3672","email":"caroline@ionicrealty.com","picture":"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/caroline_kingsley.jpg"}
+  },
+  {
+    "id": "GET_properties_id",
+    "client_params": 901,
+    "server_return":{"id":1,"city":"Boston","state":"MA","price":"$475,000","title":"Condominium Redefined","beds":2,"baths":2,"likes":5,"broker":{"id":1,"name":"Caroline Kingsley","title":"Senior Broker","picture":"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/caroline_kingsley.jpg"},"pic":"https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house08wide.jpg","thumb":"https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house08sq.jpg","description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad."}
+  },
+  {
+    "id": "GET_user_recipe_id",
+    "client_params": 901,
+    "server_return":[{"id":1,"name":"Burger"},{"id":2,"name":"Cake"}]
+  },
+  {
+    "id": "GET_ingre_id",
+    "client_params": 901,
+    "server_return":[{"id":1,"recipe_id":1,"name":"Meat"},{"id":2,"recipe_id":1,"name":"Cheese"},{"id":3,"recipe_id":1,"name":"Tomato"},{"id":4,"recipe_id":1,"name":"Onion"},{"id":5,"recipe_id":1,"name":"Lettuce"},{"id":6,"recipe_id":1,"name":"Pickle"}]
+  },
+  {
+    "id": "GET_brokers_id",
+    "client_params": 901,
+    "server_return":{"id":1,"firstName":"Caroline","lastName":"Kingsley","title":"Senior Broker","phone":"617-244-3672","mobilePhone":"617-244-3672","email":"caroline@ionicrealty.com","picture":"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/caroline_kingsley.jpg"}
+  },
+  {
+    "id": "GET_brokers",
+    "server_return":[{"id":1,"firstName":"Caroline","lastName":"Kingsley","title":"Senior Broker","phone":"617-244-3672","mobilePhone":"617-244-3672","email":"caroline@ionicrealty.com","picture":"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/caroline_kingsley.jpg"},{"id":2,"firstName":"Michael","lastName":"Jones","title":"Senior Broker","phone":"617-244-3672","mobilePhone":"617-244-3672","email":"michael@ionicrealty.com","picture":"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/michael_jones.jpg"},{"id":3,"firstName":"Jonathan","lastName":"Bradley","title":"Senior Broker","phone":"617-244-3672","mobilePhone":"617-244-3672","email":"jonathan@ionicrealty.com","picture":"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/jonathan_bradley.jpg"},{"id":4,"firstName":"Jennifer","lastName":"Wu","title":"Senior Broker","phone":"617-244-3672","mobilePhone":"617-244-3672","email":"jen@ionicrealty.com","picture":"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/jennifer_wu.jpg"},{"id":5,"firstName":"Olivia","lastName":"Green","title":"Senior Broker","phone":"617-244-3672","mobilePhone":"617-244-3672","email":"olivia@ionicrealty.com","picture":"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/olivia_green.jpg"},{"id":6,"firstName":"Miriam","lastName":"Aupont","title":"Senior Broker","phone":"617-244-3672","mobilePhone":"617-244-3672","email":"miriam@ionicrealty.com","picture":"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/miriam_aupont.jpg"},{"id":7,"firstName":"Michelle","lastName":"Lambert","title":"Senior Broker","phone":"617-244-3672","mobilePhone":"617-244-3672","email":"michelle@ionicrealty.com","picture":"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/michelle_lambert.jpg"},{"id":8,"firstName":"Victor","lastName":"Ochoa","title":"Senior Broker","phone":"617-244-3672","mobilePhone":"617-244-3672","email":"victor@ionicrealty.com","picture":"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/victor_ochoa.jpg"}]
+  },
+  {
+    "id": "DELETE_aaaa",
+    "client_params": 901,
+    "server_return":{}
+  },
+  {
+    "id": "recipe_id",
+    "client_params": 901,
+    "server_return":{"id":1,"name":"Burger"}
+  },
+  {
+    "id": "donuts_id",
+    "client_params": 901,
+    "server_return":[{"id":1,"name":"Glazed","topping":null,"price":2}]
+  },
+  {
+    "id": "shop_id",
+    "client_params": 901,
+    "server_return":[{"id":1,"name":"Dillas Donuts","city":"Detroit"}]
+  }
+]
