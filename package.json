@@ -25,6 +25,7 @@
     "estraverse": "^4.3.0",
     "express": "^4.17.1",
     "falafel": "^2.1.0",
+    "fs-extra": "^8.1.0",
     "goreplay_middleware": "^1.0.0",
     "js-beautify": "^1.8.9",
     "jsdom": "^15.1.1",

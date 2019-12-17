@@ -16,9 +16,9 @@ var passedEntry = false;
 var path = require('path');
 var format = require("string-template");
 var polycrc = require('polycrc');
-var constraints_solver = require('../../../../src/dummyInsourcing')
+var constraints_solver = require('../../../../src/Insourcing')
 var uuid = 0;
-
+J$.mashallingLog ={};
 // var insourcing = require('src/dummyInsourcing');
 J$.sqlInvocationsMap ={};
 var lineColumn = require("line-column");
@@ -26,7 +26,7 @@ J$.toRollback = false;
 //J$.toRollback = false;
 var colors = require("colors/safe");
 var fs = require('fs');
-var _ = require('underscore');
+var underscore = require('underscore');
 var esprima = require('esprima');
 var estraverse = require('estraverse');
 const { parse } = require('json2csv');
@@ -42,7 +42,6 @@ const sqlParser = new Parser();
 J$.SAVE_TABLE = "SELECT * FROM recipes";
 
 var gen_rw_inputs={};
-
 
 function aabbba(a1, b1) {
 jalangiLabel1026:
@@ -226,9 +225,19 @@ sandbox.TraceWriter = function (traceFileName) {
 		}
 	}
 
+	function hasEqualInput(obj,output){
+		for (var i in aaa){
+			if(underscore.isEqual(aaa[i].client_params,obj) && underscore.isEqual(aaa[i].server_return,output)){
+				return aaa[i].id;
+			}
+		}
+
+		return undefined;
+
+	}
 	function hasEqual(obj){
 		for (var i in aaa){
-			if(_.isEqual(aaa[i].server_return,obj)){
+			if(underscore.isEqual(aaa[i].server_return,obj)){
 				return aaa[i].id; 
 			}
 		}
@@ -320,49 +329,41 @@ sandbox.TraceWriter = function (traceFileName) {
             var location = J$.iidToLocation(id);
             var aaa = /\((.+):(.+):(.+):(.+):(.+)\)/g.exec(location);
             var type_val = typeof val;
-            // console.log("@@@@@@",val);
-            //if(aaa !=null && aaa.length == 6 &&(!aaa[1].includes("node_modules"))){
-            //if(aaa !=null && aaa.length == 6 && !aaa[1].includes("node_modules") && type_val !=='object' && type_val !=='function' && parseInt(val)){
-           if(!aaa[1].includes("node_modules") && J$.toRollback && aaa !=null && aaa.length == 6  && type_val !=='object' && type_val !=='function' && parseInt(val)){
-
-
-            // if(J$.toRollback && aaa !=null && aaa.length == 6  && type_val !=='object' && type_val !=='function' && parseInt(val)){
-                if(90000<parseInt(val) && parseInt(val) <99999) {
-                    console.log("process.cwd()",process.cwd())
+            if(!aaa[1].includes("node_modules") && J$.toRollback && aaa !=null && aaa.length == 6  && type_val !=='object' && type_val !=='function' && parseInt(val)){
+            if(90000<parseInt(val) && parseInt(val) <99999) {
+                    // console.log("process.cwd()",process.cwd())
                     if(sqlInvocations.length==0 || (sqlInvocations.length==1 && sqlInvocations.uuid<uuid)){
+                        var code = fs.readFileSync(aaa[1]).toString();
+                        var escodegen = require('escodegen');
+                        var pos = lineColumn(code).toIndex(aaa[2], aaa[3]);
+                        var end =  lineColumn(code).toIndex(aaa[4], aaa[5]);
+                        var fff = code.slice(pos, end);
 
-                                       var code = fs.readFileSync(aaa[1]).toString();
-                                       var escodegen = require('escodegen');
-                var pos = lineColumn(code).toIndex(aaa[2], aaa[3]);
-                var end =  lineColumn(code).toIndex(aaa[4], aaa[5]);
-                var fff = code.slice(pos, end);
+                        J$.mashallingLog.entry = {};
+                        J$.mashallingLog.entry.filename =aaa[1].replace(process.cwd()+"/",'');
+                        J$.mashallingLog.entry.filnenamerange = aaa[1].replace(process.cwd()+"/",'')+":"+pos+":"+end;
+                        J$.mashallingLog.entry.range =[pos, end];
+                        J$.mashallingLog.entry.value = val-90000;
 
+                        var ast = esprima.parse(code,{ loc: true, range: true });
+                        var identifers = [];
+                        var entryfact = "";
+                        estraverse.traverse(ast, {
+                            enter: function (node, parent) {
+                                node.parent = parent;
+                            if (node.type =="Identifier" && node.range[0]>=pos && node.range[1]<=end){
+                                // var findingnode=parent;
+                                if(parent.parent && parent.parent.type=="VariableDeclarator" && parent.parent.id.name==name) {
+                                    // console.log("EEEE", escodegen.generate(parent.parent), parent.parent.type, parent.parent.id.range);
+                                    entryfact= format("fp.fact(ref(BitVecVal(hashVar[\"{0}\"][\"bin\"],var),BitVecVal({1},val)))",[J$.mashallingLog.entry.filename+":"+parent.parent.id.range[0]+":"+parent.parent.id.range[1],polycrc.crc24(JSON.stringify(val-90000))]);
+                                    J$.mashallingLog.entry.value_sid =polycrc.crc24(JSON.stringify(val-90000));
+                                }
+                            }
+                        }});
 
-                var ast = esprima.parse(code,{ loc: true, range: true });
-                var identifers = [];
-                estraverse.traverse(ast, {
-                    enter: function (node, parent) {
-                        node.parent = parent;
-        // if (node.type == 'FunctionExpression' || node.type == 'FunctionDeclaration')
-        //     return estraverse.VisitorOption.Skip;
-                    if (node.type =="Identifier" && node.range[0]>=pos && node.range[1]<=end){
-
-                        // var findingnode=parent;
-                        if(parent.parent && parent.parent.type=="VariableDeclarator" && parent.parent.id.name==name) {
-                            console.log(escodegen.generate(parent.parent), parent.parent.type, parent.parent.id.range);
-                        }
-                    }
-                }});
-
-
-                 if(!gen_rw_inputs[hasEqual(val)]) gen_rw_inputs[hasEqual(val)]={};
-                     if(!gen_rw_inputs[hasEqual(val)].entry){
-                         gen_rw_inputs[hasEqual(val)].entry={};
-                    }
-                     // gen_rw_inputs[hasEqual(val)].exit.rwfacts = text;
-                    gen_rw_inputs[hasEqual(val)].entry.val = JSON.stringify(val-90000);
-
-                        console.log(uuid, "<-ENTRYPOINT:",pos,end, fff,  name,location, "  WRITE(|"+val+"|)",gen_rw_inputs);
+                        J$.mashallingLog.entry.rwfacts = entryfact;
+                        console.log(colors.magenta("Entry Point Identifed"+"  WRITE(|"+val+"|)"));
+                        // console.log(uuid, "<-ENTRYPOINT:",pos,end, fff,  name,location, "  WRITE(|"+val+"|)",J$.mashallingLog);
                         // entryPointMap[parseInt(val)] = location; //keep latest WRITE
                     }
 
@@ -373,12 +374,10 @@ sandbox.TraceWriter = function (traceFileName) {
 
                     uuid++;
                         logEvent("<-ENTRYPOINT:", name,"  WRITE(|"+val+"|)", location);
-                }else if(entryPointMap[parseInt(val)+900]==location){
+                }else if(entryPointMap[parseInt(val)+9000]==location){
                          return {entry:location};
                          J$.entryCursor = uuid;
-
-
-                         console.log(uuid, "@@@@@@@@@            >>> ENTRYPOINT:", name,location,"  WRITE(|", entryPointMap[location],"->",val,"|)");
+                         // console.log(uuid, "@@@@@@@@@            >>> ENTRYPOINT:", name,location,"  WRITE(|", entryPointMap[location],"->",val,"|)");
                 }else{
                           //  console.log(colors.grey(uuid, "@@@@@@@@@            >>> ENTRYPOINT:", name,location,"  WRITE(|", entryPointMap[location],"->",val,"|)"));
                 }
@@ -391,12 +390,12 @@ sandbox.TraceWriter = function (traceFileName) {
 
 
              if(!aaa[1].includes("node_modules")&& aaa !=null && aaa.length == 6  && typeof val =="string" && val == "JSRCIInsourcing"){
-                console.log("@@@@@@@@@@@@@Starting Insourcing!!!"+constraints_solver("aaaaaaaaaaa"));
-
+                console.log(colors.magenta("@@@@@@@@@@@@@Starting Insourcing!!!"+constraints_solver(J$.mashallingLog)));
+                // console.log(colors.green(J$.mashallingLog));
              }
             if(!aaa[1].includes("node_modules")&& aaa !=null && aaa.length == 6  && typeof val =="string" && val == "JSRCIRestore"){
                     //J$.toRollback = true;
-                    console.log("@@@@@@@@@@@@@JSRCIRestore J$.toRollback", J$.toRollback);
+                    console.log(colors.magenta("@@@@@@@@@@@@@JSRCIRestore"));
 
                     try {
                         if (J$.methods.m1 = !undefined) J$.methods.m1.query("SELECT * from recipes", function (error, results, fields) {
@@ -426,7 +425,24 @@ sandbox.TraceWriter = function (traceFileName) {
                 // ;
                 var ast = esprima.parse(code,{ loc: true, range: true });
                 var identifers = [];
-                estraverse.traverse(ast, {
+                var newexitfact;
+
+                var text="";
+                if(identifers.length==2){
+                   text= format("fp.fact(ref2(BitVecVal(hashVar[\"{0}\"][\"bin\"],var),BitVecVal(hashVar[\"{1}\"],prop),BitVecVal({2},val)))",[identifers[0],identifers[1], polycrc.crc24(JSON.stringify(val))]);
+                    // var fact = "fp.fact(ref2(BitVecVal(hashVar[\""+identifers+"\"][\"bin\"],var),BitVecVal(hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:546:552"]["bin"],prop), BitVecVal(1999,val)))
+
+                }
+                    J$.currentOutput = val;
+                    J$.mashallingLog.exit = {};
+                    J$.mashallingLog.exit.filename =aaa[1].replace(process.cwd()+"/",'');
+                    J$.mashallingLog.exit.filnenamerange = aaa[1].replace(process.cwd()+"/",'')+":"+pos+":"+end;
+                    J$.mashallingLog.exit.range =[pos, end];
+                    J$.mashallingLog.exit.val=JSON.stringify(val);
+
+
+
+                    estraverse.traverse(ast, {
                     enter: function (node, parent) {
                         node.parent = parent;
         // if (node.type == 'FunctionExpression' || node.type == 'FunctionDeclaration')
@@ -439,28 +455,19 @@ sandbox.TraceWriter = function (traceFileName) {
                             // console.log(escodegen.generate(parent.parent), parent.parent.type, parent.parent.id.range);
                         }
 
+
+                       if(parent.parent && parent.parent.type=="VariableDeclarator" && parent.parent.id.name==name) {
+                        // console.log("OOOOOOEEEE");
+                        newexitfact= format("fp.fact(ref(BitVecVal(hashVar[\"{0}\"][\"bin\"],var),BitVecVal({1},val)))",[J$.mashallingLog.exit.filename+":"+parent.parent.id.range[0]+":"+parent.parent.id.range[1],polycrc.crc24(JSON.stringify(val))]);
+                        J$.mashallingLog.exit.value_sid =polycrc.crc24(JSON.stringify(val));
+                       }
                     }
                 }});
-                var text="";
-                if(identifers.length==2){
-                   text= format("fp.fact(ref2(BitVecVal(hashVar[\"{0}\"],var),BitVecVal(hashVar[\"{1}\"],prop),BitVecVal({2},val)))",[identifers[0],identifers[1], polycrc.crc24(JSON.stringify(val))]);
-                    // var fact = "fp.fact(ref2(BitVecVal(hashVar[\""+identifers+"\"][\"bin\"],var),BitVecVal(hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:546:552"]["bin"],prop), BitVecVal(1999,val)))
 
-                }
-
-                    if(!gen_rw_inputs[hasEqual(val)]) gen_rw_inputs[hasEqual(val)]={};
-                // if(gen_rw_inputs[hasEqual(val)]==undefined){
-                    if(!gen_rw_inputs[hasEqual(val)].exit){
-                         gen_rw_inputs[hasEqual(val)].exit={};
-                    }
-
-                    gen_rw_inputs[hasEqual(val)].exit.rwfacts = text;
-                    gen_rw_inputs[hasEqual(val)].exit.val = JSON.stringify(val);
-                // }
-
-
-                 console.log(text, uuid, "->EXITPOINT:", name, location,fff, lhs, "  WRITE OJB(|", JSON.stringify(val), "|)",typeof val,  hasEqual(val), "ENTRY??   ",gen_rw_inputs);
-
+                         // J$.mashallingLog.exit.rwfacts=text;
+                    J$.mashallingLog.exit.rwfacts = newexitfact;
+                 // console.log(text, uuid, "->EXITPOINT:", name, location,fff, lhs, "  WRITE OJB(|", JSON.stringify(val), "|)",typeof val,  hasEqual(val), "ENTRY??   ",J$.mashallingLog);
+                 console.log(colors.magenta("Exit Point Identifed"+"  WRITE(|"+JSON.stringify(val)+"|)"));
                 //if(IsJsonFormat(val)){
 
                 // console.log(J$.entryCursor, uuid, "->EXITPOINT:", name, location, "  WRITE OJB(|", JSON.stringify(val), "|)",typeof val,  hasEqual(val));

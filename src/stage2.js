@@ -200,7 +200,7 @@ function debugStmtSave(nd)
 
 	// if(pred.parent && pred.parent.parent) console.log("parent", pred.parent.parent.type);
 	if(pred.parent && pred.parent.type ==='Program'){
-           console.log("skipp global conrol flow", pred.source());
+           // console.log("skipp global conrol flow", pred.source());
 	}
 	// else if(pred.type == "FunctionDeclartion"){
     //     console.log("skipp global conrol flow of FunctionDeclartion", pred.source());
@@ -212,7 +212,7 @@ function debugStmtSave(nd)
             // if(pred.parent.parent && pred.parent.parent.parent)
             // console.log("aaaa", aaaa, pred.parent.parent.parent.type, "\n");
             // else
-            console.log(aaaa, pred.parent.type, "\n");
+            // console.log(aaaa, pred.parent.type, "\n");
 	}
         // }
     }
@@ -233,8 +233,8 @@ function debugStmtSave(nd)
 function debugStmtPrint()
 {
     "use strict";
-    var fd = fs.openSync('stmtDebug.txt', 'w+');
-    fs.writeSync(fd, debugStmtMsg);
+    // var fd = fs.openSync('stmtDebug.txt', 'w+');
+    // fs.writeSync(fd, debugStmtMsg);
 }
 
 function getAbsPos(nd)
@@ -510,11 +510,11 @@ function getHashVarEndPos(node,_name)
         name = node.source();
     }
     //console.log(isPropertyIden(node), name);
-    if(node.type)
-        console.log("__________nodenode",node.type,node.source());
+    // if(node.type)
+        // console.log("__________nodenode",node.type,node.source());
     var posStr ="";
     if(typeof node === 'string' || node instanceof String) {
-        console.log("____stringnode", node);
+        // console.log("____stringnode", node);
        posStr = node;
     } else{
         posStr = toPoSStr(file, ast.getPosition(node).start_offset, ast.getPosition(node).end_offset);
@@ -532,9 +532,9 @@ function getHashVarEndPos(node,_name)
         if(id && id.declaration) {
             var declaration = scope_ctx.identify(ast.getPosition(node).start_offset).declaration;
             var identifier = scope_ctx.identify(ast.getPosition(node).start_offset).identifier;
-              console.log("decldecl_info", declaration, identifier);
+              // console.log("decldecl_info", declaration, identifier);
             if(declaration.range[0] == identifier.range[0] &&  declaration.range[1] == identifier.range[1]) {
-                console.log("decldecl_itself", declaration, identifier);
+                // console.log("decldecl_itself", declaration, identifier);
                 hashVarObj.insertPoS(posStr, name, true);
             }else{
                 var posdecl = toPoSStr(file, declaration.range[0], declaration.range[1]);
@@ -546,7 +546,7 @@ function getHashVarEndPos(node,_name)
                 }
             }
         }else{
-            console.log("decldecl__nono",posStr, node.source());
+            // console.log("decldecl__nono",posStr, node.source());
             // console.log("decldecl__nono",posStr, node.source());
             // console.log("decldecl__nono",posStr, node.source());
             hashVarObj.insertPoS(posStr, node.source(), true);
@@ -610,7 +610,7 @@ function getHashVarEndPos2(node,name)
     if (isPropertyIden(node)&& myhashVar[posStr]===undefined){
         hashVarObj.insertPoS(posStr, name, true);
         hash = myhashVar[posStr].bin;
-	console.log("@@@@@ppp", hash, name);
+	// console.log("@@@@@ppp", hash, name);
         return hash;
 
     }
@@ -699,9 +699,9 @@ function printHashVarAll(start)
     for (var i in hashVar) {
         debugMsg = debugMsg + "\n" + hashVar[i] + ":" + i;
     }
-    var fd = fs.openSync('hashVarDebug.txt', 'w+');
+    // var fd = fs.openSync('hashVarDebug.txt', 'w+');
 
-    fs.writeSync(fd, debugMsg);
+    // fs.writeSync(fd, debugMsg);
 
     // for (i = start; i < hashVar.length; i++) {
     for (var i in hashVar) {
@@ -720,11 +720,11 @@ function printHashVarAll(start)
      toArray = toArray + "\n"+"hashVar[\""+key+"\"]={\"bin\":"+getDec(myhashVar[key].bin)+", \"name\":\""+myhashVar[key].name.replace(/\n/g,"\\n").replace(/"/g, '\\"')+"\"};";
     });
 
-    var fd = fs.openSync('MyhashVarDebug.txt', 'w+');
+    // var fd = fs.openSync('MyhashVarDebug.txt', 'w+');
 
     // console.log(toArray);
-    fs.writeSync(fd, mydebug);
-    smt2FileWritePy(toArray);
+    // fs.writeSync(fd, mydebug);
+    // smt2FileWritePy(toArray);
     return toArray;
 
 }
@@ -734,13 +734,13 @@ var file;
 function smt2FileWrite(content)
 {
     "use strict";
-    fs.writeSync(smt2fd, content+'\n');
+    // fs.writeSync(smt2fd, content+'\n');
 }
 var toPy;
 function smt2FileWritePy(content)
 {
     "use strict";
-    fs.writeSync(pyfd, content+'\n');
+    // fs.writeSync(pyfd, content+'\n');
     // toPy = content+'\n';
 
 }
@@ -750,9 +750,9 @@ var numCons = 0;
 function consFileWrite()
 {
     "use strict";
-    var fd2 = fs.openSync('numConstraints.txt', 'w+');
-    fs.writeSync(fd2, numCons);
-    fs.closeSync(fd2);
+    // var fd2 = fs.openSync('numConstraints.txt', 'w+');
+    // fs.writeSync(fd2, numCons);
+    // fs.closeSync(fd2);
 }
 
 function makeGeneralRule()
@@ -764,9 +764,9 @@ function makeGeneralRule()
     pathJSdep = path.dirname(pathJSdep);
     //var buffer = fs.readFileSync('./z3_rules/general_rule_z3.smt2').toString();
    // console.log(buffer);
-    smt2fd = fs.openSync('./z3_result.smt2', 'w+');
+   //  smt2fd = fs.openSync('./z3_result.smt2', 'w+');
 
-    pyfd = fs.openSync('./z3_result0.py', 'w+');
+    // pyfd = fs.openSync('./z3_result0.py', 'w+');
     //smt2FileWrite(buffer);
 }
 
@@ -830,7 +830,7 @@ function toPoSStr(file, start, end){
 function printStmtPy(nd)
 {
     "use strict";
-    console.log("%%%%%"+nd.source());
+    // console.log("%%%%%"+nd.source());
     // var hash = ast.getAttribute(nd, 'hash');
     // getMyHashFromNd(nd)
     var funcRange;
@@ -960,12 +960,12 @@ function checkCallExpression(left, right, hashPos,myHash)
     var callee = right.callee;
 
 
-   console.log("AAAAAA"+left,"     " ,right.source(), callee.type);
+   // console.log("AAAAAA"+left,"     " ,right.source(), callee.type);
     //+"  "+CircularJSON.stringify(right.arguments))
     var o_name;
     var src, varName, name;
     var eventType;
-    console.log("checkCallExpression", left,right.arguments.length)
+    // console.log("checkCallExpression", left,right.arguments.length)
     if (left !== null && right.arguments.length >0 ) {
 
       for (var i in right.arguments) {
@@ -984,7 +984,7 @@ function checkCallExpression(left, right, hashPos,myHash)
     if (left !== null && checkNativeCalls(right)) {
         for (var i in right.arguments) {
             var temp = allAssignment(left, right.arguments[i], hashPos,myHash);
-            console.log("myHash1"+myHash);
+            // console.log("myHash1"+myHash);
              rtSt = updateSt(rtSt, temp.rtSt);
     rtStPy = updateSt(rtSt, temp.rtStPy);
             // temp = allAssignmentPy(left, right.arguments[i], hashPos,myHash);
@@ -1040,7 +1040,7 @@ function checkCallExpression(left, right, hashPos,myHash)
         rtSt = updateSt(rtSt, '(rule (dom-install ' + getHashVar(object) + ' ' + getHashVar(eventType) + ' ' + getHashVar(value) + ' ' + hashPos + ' ))');
         numCons++;
         rtDebugSt = updateSt(rtDebugSt, '(rule (dom-install  ' + object + ' ' + eventType + ' ' + value + ' ' + hashPos + ' ))');
-        console.log(rtDebugSt);
+        // console.log(rtDebugSt);
         return {
             "rtSt": rtSt,
             "rtDebugSt": rtDebugSt
@@ -1079,7 +1079,7 @@ function checkCallExpression(left, right, hashPos,myHash)
             numCons++;
             rtDebugSt = updateSt(rtDebugSt, "DomRead(" + domName + hashPos + ")");
             rtSt = updateSt(rtSt, "(rule (Assign "+getHashVar(left.source())+" "+getHashVar(domName)+ " " + hashPos + " ))");
-            console.log("YYYYY"+myHash);
+            // console.log("YYYYY"+myHash);
             var fact      = "fp.fact(Assign(BitVecVal("+getDec(getHashVar(left.source()))+",var),BitVecVal("+getDec(getHashVar(domName))+",obj),BitVecVal("+myHash+",lineNum)))";
             rtStPy        = myupdateSt(rtStPy, fact);
 
@@ -1131,13 +1131,13 @@ function checkCallExpression(left, right, hashPos,myHash)
     if(right.callee.object && right.callee.property) {
 
         // var fact = "fp.fact(Store(BitVecVal(" + getDec(getHashVarEndPos(right.callee.object, right.callee.object.source())) + ",var),BitVecVal(" + getDec(getHashVarEndPos(right.callee.property, right.callee.property.source())) + ",var), BitVecVal(" + 7 + ",prop), BitVecVal(" + myHash + ",lineNum)))";
-        console.log("here?",fact)
+        // console.log("here?",fact)
         rtStPy = myupdateSt(rtStPy, fact);
     }
     var cnt = 1;
     for (var i in right.arguments) {
         var param = right.arguments[i];
-        console.log("param.type"+param.type, " ",param.source());
+        // console.log("param.type"+param.type, " ",param.source());
         // if (param.type === 'Literal' || param.type === 'ArrayExpression' || param.type === 'ObjectExpression') {
         if (param.type === 'Literal' || param.type === 'ArrayExpression' || param.type === 'ObjectExpression' ||param.type==='Identifier') {
             o_name = hashCnt + "tempHash";
@@ -1211,14 +1211,14 @@ function domInstallCheck(left, right, hashPos)
             rtSt = updateSt(rtSt, "(rule (dom-install " + getHashVar(object)+" "+getHashVar(eventType)+" "+getHashVar(right.source())+" "+hashPos+" ))");
             numCons++;
             rtDebugSt = updateSt(rtDebugSt, "dom-install( " + object+ " " + eventType+" "+right.source()+" "+hashPos+")");
-            console.log(rtDebugSt);
+            // console.log(rtDebugSt);
             return {
                 "result": true,
                 "rtSt": rtSt
             };
         }
     }
-    console.log(rtDebugSt);
+    // console.log(rtDebugSt);
     return {
         result: false
     };
@@ -1249,7 +1249,7 @@ function normalizeExpression(nd)
         // do nothing
         return rtSt;
     } else {
-        console.log(nd.source());
+        // console.log(nd.source());
         // throw new Error("Another right type??");
     }
 }
@@ -1267,7 +1267,7 @@ function rightSide(left, right, hashPos, myHash)
     var rightType;
     var rightSt = "";
     var rightStPy = "", rightDebugSt = "";
-    console.log("right.type",right.type, right.source())
+    // console.log("right.type",right.type, right.source())
     if (right.type === 'Identifier') {
         rightType = "one";
         rightSt = getHashVar(right.source());
@@ -1300,11 +1300,11 @@ function rightSide(left, right, hashPos, myHash)
 
         var object = right.object.source();
         var property = right.property.source();
-        console.log("********object",object, property);
+        // console.log("********object",object, property);
         rightSt = updateSt(rightSt, getHashVar(object) + " " + getHashVar(property));
         rightStPy = myupdateSt(rightStPy, getHashVarEndPos(right.object,object) + " " + getHashVarEndPos(right,property, property));
         rightDebugSt = updateSt(rightDebugSt, object + " " + property);
-        console.log("_____@@@@@@@@@@",scope_ctx.identify(ast.getPosition(right.object).start_offset).declaration, ast.getPosition(right.object).end_offset, object, property);
+        // console.log("_____@@@@@@@@@@",scope_ctx.identify(ast.getPosition(right.object).start_offset).declaration, ast.getPosition(right.object).end_offset, object, property);
         scope_ctx
         var fact1 =  "(rule (Read2 " + getHashVarEndPos(right.object, object) + " " + getHashVarEndPos(right.property, property) + " " + hashPos + " ))";
         rtSt = updateSt(rtSt,fact1);
@@ -1459,15 +1459,15 @@ function allAssignment(left, right, hashPos, myHash)
         leftStPy = myupdateSt(leftStPy, getDec(getHashVar("none" + noneCnt)));
 
         leftDebugSt = updateSt(leftDebugSt, "none" + noneCnt);
-        console.log("leftStleftSt", leftStPy)
+        // console.log("leftStleftSt", leftStPy)
         noneCnt++;
     } else if (left.type === 'Identifier') {
         leftType = "one";
         leftSt = updateSt(leftSt, getHashVar(left.source()));
         leftStPy = updateSt(leftStPy,getDec(getHashVarEndPos(left, left.source())));
-        console.log("leftStleftSt", leftSt, leftStPy)
+        // console.log("leftStleftSt", leftSt, leftStPy)
         leftDebugSt = updateSt(leftDebugSt, left.source());
-        console.log("Write1",left.source());
+        // console.log("Write1",left.source());
         // if (left.source().indexOf("tmpv") === -1) {
           //  rtSt = updateSt(rtSt, "(rule (Write1 " + getHashVar(left.source()) + " " + hashPos + "))");
 
@@ -1527,19 +1527,19 @@ function allAssignment(left, right, hashPos, myHash)
     var rightSt = temp.rightSt;
     var rightStPy = temp.rightStPy;
     var rightDebugSt = temp.rightDebugSt;
-    console.log("@@@@@TYPE?? "+JSON.stringify(temp));
-    console.log("@@@@@TYPE??111 "+rightSt);
+    // console.log("@@@@@TYPE?? "+JSON.stringify(temp));
+    // console.log("@@@@@TYPE??111 "+rightSt);
     var ttt = rightStPy;
-     console.log("@@@"+leftType,"ssssss",rightType);
+     // console.log("@@@"+leftType,"ssssss",rightType);
     // return part
     if (rightType === "normalize") {
-        console.log("nnnnnnnnn",rtStPy);
+        // console.log("nnnnnnnnn",rtStPy);
         return {rtSt:rtSt,rtStPy:rtStPy};
     }
 
     else if (rightType === "call") {
         // do nothing
-        console.log(rtDebugSt);
+        // console.log(rtDebugSt);
         return {rtSt:rtSt,rtStPy:rtStPy};
     } else if (rightType === "nothing") {
         return "";
@@ -1550,7 +1550,7 @@ function allAssignment(left, right, hashPos, myHash)
         var fact      = "fp.fact(Assign(BitVecVal("+leftStPy+",var),BitVecVal("+getDec(ttt)+",obj),BitVecVal("+abcd+",lineNum)))";
         rtStPy        = myupdateSt(rtStPy, fact);
         if(leftStPy+""=="NaN"){
-             console.log(leftSt,"UUUUUUUU"+fact,getDec(leftSt),leftSt);
+             // console.log(leftSt,"UUUUUUUU"+fact,getDec(leftSt),leftSt);
         }
 
         numCons++;
@@ -1561,8 +1561,8 @@ function allAssignment(left, right, hashPos, myHash)
 
         // var myHashVar = parseInt(getHashVar(left.source()).substring(2), 16)
         var aa = leftSt.split(" ");
-        console.log("lllleftSt"+leftSt,left.source());
-        console.log("11rightSt"+rightSt, right.source());
+        // console.log("lllleftSt"+leftSt,left.source());
+        // console.log("11rightSt"+rightSt, right.source());
         var fact = "fp.fact(Store(BitVecVal("+getDec(aa[0])+",var),BitVecVal("+getDec(aa[1])+",var), BitVecVal("+getDec(rightStPy)+",prop), BitVecVal("+myHash+",lineNum)))";
         rtStPy = myupdateSt(rtStPy, fact);
 
@@ -1574,11 +1574,11 @@ function allAssignment(left, right, hashPos, myHash)
     } else if (leftType === "one" && rightType === "two") {
         rtSt = updateSt(rtSt, "(rule (Load " + leftSt + " " + rightSt + " " + hashPos + " ))");
         var aa = rightStPy.split(" ");
-         console.log("!!!!!!leftSt"+leftStPy);
-         console.log("!!!!!!rightSt", rightStPy , aa);
+         // console.log("!!!!!!leftSt"+leftStPy);
+         // console.log("!!!!!!rightSt", rightStPy , aa);
 
               // console.log("lllleftSt"+leftStPy,left.source(), right.source());
-        console.log("11rightSt"+rightSt, right);
+        // console.log("11rightSt"+rightSt, right);
         var a1 =  parseInt(getDec(aa[1]));
         var fact      = "fp.fact(Load(BitVecVal("+leftStPy+",var),BitVecVal("+getDec(aa[0])+",var), BitVecVal("+a1+",prop),BitVecVal("+myHash+",lineNum)))";
         rtStPy        = myupdateSt(rtStPy, fact);
@@ -1603,8 +1603,8 @@ function allAssignment(left, right, hashPos, myHash)
         rtSt = updateSt(rtSt, "(rule (Store " + leftSt + " " + hashN + " " + hashPos + " ))");
 
         var aa = rightStPy.split(" ");
-        console.log("@leftSt"+leftSt);
-        console.log("@rightSt"+rightSt);
+        // console.log("@leftSt"+leftSt);
+        // console.log("@rightSt"+rightSt);
         var fact = "fp.fact(Store(BitVecVal("+getDec(leftSt)+",var),BitVecVal("+getDec(aa[0])+",prop), BitVecVal("+getDec(aa[1])+",var), BitVecVal("+myHash+",lineNum)))";
 
         rtStPy        = myupdateSt(rtStPy, fact);
@@ -1614,7 +1614,7 @@ function allAssignment(left, right, hashPos, myHash)
     } else {
         throw new Error("two two case????");
     }
-    console.log("changed?", rtStPy);
+    // console.log("changed?", rtStPy);
     return {rtSt:rtSt,rtStPy:rtStPy};
 }
 
@@ -1628,7 +1628,7 @@ function traverseCFGM(root)
     "use strict";
     var rtSt = "",rtStPy="";
     var pos  = ast.getPosition(root);
-    console.log("sstart_line"+pos.start_line);
+    // console.log("sstart_line"+pos.start_line);
     iterCFG(root, function(nd) {
         // set hash value for statement
         setHashStmt(nd);
@@ -1642,7 +1642,7 @@ function traverseCFGM(root)
         // console.log("traverseCFGM "+simpleStringify(nd));
         var myHash = '';
 
-        console.log("ndndndndndnd   "+ast.getPosition(nd));
+        // console.log("ndndndndndnd   "+ast.getPosition(nd));
         if (nd.type !== 'Entry') {
 
             if (!install) {
@@ -1654,7 +1654,7 @@ function traverseCFGM(root)
 
             if(nd.parent.type ==='Program' && nd.type!=='EmptyStatement'){
                  myHash = getHashVarEndPos(nd, nd.source());
-                console.log("GGGGGGGGGglobal?   ",ast.getPosition(nd).start_offset,", ",ast.getPosition(nd).end_offset, "  ", myHash, "  ",nd.source());
+                // console.log("GGGGGGGGGglobal?   ",ast.getPosition(nd).start_offset,", ",ast.getPosition(nd).end_offset, "  ", myHash, "  ",nd.source());
                 // rtStPy = myupdateSt(rtStPy, "globals["+myHash+"]=\""+nd.source().replace(/\n/g,"\\n").replace(/"/g, '\\"')+"\"");
             }
             var hashPos = ast.getAttribute(nd, 'hash');
@@ -1697,7 +1697,7 @@ function traverseCFGM(root)
                     paramHash = getHashVar(nd.params[i].source());
 
                     rtSt = updateSt(rtSt,"(rule (Formal "+o_nameHash+" "+getZ3Num(cnt)+" "+paramHash+" ))");
-                    console.log("Formal(" +o_name+" "+cnt+" "+nd.params[i].source() + ")");
+                    // console.log("Formal(" +o_name+" "+cnt+" "+nd.params[i].source() + ")");
                     paramHash = getHashVarEndPos(nd.params[i], nd.params[i].source());
                     var fact="fp.fact(Formal(BitVecVal("+getDec(my_o_nameHash)+",obj),BitVecVal("+getDec(getHashVarEndPos(nd.params[i], nd.params[i].source()))+",obj),BitVecVal("+getDec(getZ3Num(cnt))+",obj)))"
                     rtStPy = myupdateSt(rtStPy, fact);
@@ -1735,7 +1735,7 @@ function traverseCFGM(root)
             // All assignmentExpression
             if (nd.type === 'ExpressionStatement' && nd.expression.type === 'AssignmentExpression') {
                 testFlag = true;
-                console.log("================================================"+myHash);
+                // console.log("================================================"+myHash);
                 // rtSt = updateSt(rtSt, ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
 
                 var exp = nd.expression;
@@ -1743,7 +1743,7 @@ function traverseCFGM(root)
                     o_name = "O_" + exp.left.source();
                     o_nameHash = getHashVar(o_name);
                     nameHash = getHashVar(exp.left.source());
-                    console.log("functionDeclaration: " + exp.left.source());
+                    // console.log("functionDeclaration: " + exp.left.source());
                     rtStPy = myupdateSt(rtStPy, "#functionDeclaration: "+ exp.left.source().replace(/\n/g,"\\n").replace(/"/g, '\\"'));
                     rtSt = updateSt(rtSt, ";functionDeclaration: " + exp.left.source().replace(/\n/g,"\\n").replace(/"/g, '\\"'));
                     rtStPy = myupdateSt(rtStPy, "code["+myHash+"]=\""+nd.source().replace(/\n/g,"\\n").replace(/"/g, '\\"')+"\"");
@@ -1784,7 +1784,7 @@ myupdateSt(rtStPy, "fp.fact(FuncDecl(BitVecVal("+getHashVarEndPos(exp.left,exp.l
                     rtStPy = myupdateSt(rtStPy, "code["+myHash+"]=\""+nd.source().replace(/"/g, '\\"')+"\"");
                     // rtStPy = myupdateSt(rtStPy, "lines["+myHash+"]="+ast.getPosition(nd).start_line);
                     // rtStPy = myupdateSt(rtStPy, "ranges["+myHash+"]=["+ast.getPosition(nd).start_line+","+ast.getPosition(nd).end_line+"]");
-                    console.log(exp.left.type + ", " + exp.right.type);
+                    // console.log(exp.left.type + ", " + exp.right.type);
                     temp = allAssignment(exp.left, exp.right, hashPos,myHash);
                     rtSt = updateSt(rtSt, temp.rtSt);
                     // temp = allAssignmentPy(exp.left, exp.right, hashPos,myHash);
@@ -1809,7 +1809,7 @@ myupdateSt(rtStPy, "fp.fact(FuncDecl(BitVecVal("+getHashVarEndPos(exp.left,exp.l
 
                 testFlag = true;
                 // console.log("================================================"+myHash);
-                console.log("@@@@@VariableDecl: " + nd.source());
+                // console.log("@@@@@VariableDecl: " + nd.source());
                 rtSt = updateSt(rtSt, ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
                 rtSt = updateSt(rtSt, ";VariableDecl: " + nd.source().replace(/\n/g,"\\n").replace(/"/g, '\\"'));
                 rtStPy = myupdateSt(rtStPy, "#VariableDecl: "+ nd.source().replace(/\n/g,"\\n").replace(/"/g, '\\"'));
@@ -1821,12 +1821,12 @@ myupdateSt(rtStPy, "fp.fact(FuncDecl(BitVecVal("+getHashVarEndPos(exp.left,exp.l
                     var dec = nd.declarations[i];
                     if (dec.init !== null) {
                         temp = allAssignment(dec.id, dec.init, hashPos,myHash);
-                        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@VariableDecl11", nd.source(),temp.rtSt);
+                        // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@VariableDecl11", nd.source(),temp.rtSt);
                         rtSt = updateSt(rtSt, temp.rtSt);
 
                         // temp = allAssignmentPy(dec.id, dec.init, hashPos,myHash);
                         rtStPy = myupdateSt(rtStPy, temp.rtStPy);
-                        console.log("#vvvvvvvv###",nd.source(), temp.rtStPy)
+                        // console.log("#vvvvvvvv###",nd.source(), temp.rtStPy)
                     }
                 }
             }
@@ -1835,7 +1835,7 @@ myupdateSt(rtStPy, "fp.fact(FuncDecl(BitVecVal("+getHashVarEndPos(exp.left,exp.l
             if (nd.type === 'ExpressionStatement' && nd.expression.type === 'CallExpression') {
                 testFlag = true;
                 // console.log("=111==============================================="+myHash);
-                console.log("CallExpression: " + nd.source()+"   "+simpleStringify(nd.expression));
+                // console.log("CallExpression: " + nd.source()+"   "+simpleStringify(nd.expression));
                 rtSt = updateSt(rtSt, ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
                 //rtSt = updateSt(rtSt, ";CallExpression: " + nd.source());
                 rtStPy = myupdateSt(rtStPy, "#CallExpression: "+ nd.source().replace(/\n/g,"\\n").replace(/"/g, '\\"'));
@@ -1870,7 +1870,7 @@ myupdateSt(rtStPy, "fp.fact(FuncDecl(BitVecVal("+getHashVarEndPos(exp.left,exp.l
             if (nd.type === 'ExpressionStatement' && nd.expression.type === 'UpdateExpression') {
                 testFlag = true;
                 // console.log("================================================"+myHash);
-                console.log("UpdateExpression: " + nd.source());
+                // console.log("UpdateExpression: " + nd.source());
                 rtSt = updateSt(rtSt, ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
                 rtSt = updateSt(rtSt, ";UpdateExpression: " + nd.source().replace(/\n/g,"\\n").replace(/"/g, '\\"'));
                 rtStPy = myupdateSt(rtStPy, "#UpdateExpression: "+ nd.source().replace(/\n/g,"\\n").replace(/"/g, '\\"'));
@@ -1888,7 +1888,7 @@ myupdateSt(rtStPy, "fp.fact(FuncDecl(BitVecVal("+getHashVarEndPos(exp.left,exp.l
             if (nd.type === 'MemberExpression') {
                 testFlag = true;
                 // console.log("================================================"+myHash);
-                console.log("MemberExpression: " + nd.source());
+                // console.log("MemberExpression: " + nd.source());
                 rtSt = updateSt(rtSt, ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
                 rtSt = updateSt(rtSt, ";MemberExpression: " + nd.source().replace(/\n/g,"\\n").replace(/"/g, '\\"'));
                 rtStPy = myupdateSt(rtStPy, "#MemberExpression: "+ nd.source().replace(/\n/g,"\\n").replace(/"/g, '\\"'));
@@ -1906,7 +1906,7 @@ myupdateSt(rtStPy, "fp.fact(FuncDecl(BitVecVal("+getHashVarEndPos(exp.left,exp.l
             if (nd.type === 'BinaryExpression' || nd.type === 'LogicalExpression' || nd.type === 'Identifier') {
                 testFlag = true;
                 // console.log("================================================"+myHash);
-                console.log("BBBBBBBBB",nd.type + ": " + nd.source());
+                // console.log("BBBBBBBBB",nd.type + ": " + nd.source());
                 rtSt = updateSt(rtSt, ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
                 rtSt = updateSt(rtSt, ";" + nd.type + ": " + nd.source().replace(/\n/g,"\\n").replace(/"/g, '\\"'));
                 rtStPy = myupdateSt(rtStPy, "#"+ nd.type + ": " + nd.source().replace(/\n/g,"\\n").replace(/"/g, '\\"'));
@@ -1985,7 +1985,7 @@ module.exports = {
         "use strict";
         scope_ctx = new esrefactor.Context(code);
         var pos  = ast.getPosition(root);
-    	console.log("rootstart_line"+pos.start_line);
+    	// console.log("rootstart_line"+pos.start_line);
 	      var facts ="";
         //hashVarCnt = startHash+"";
         file = filename;
@@ -2006,6 +2006,7 @@ module.exports = {
         // console.log("myhashStmt", myhashStmt);
         return {
           "hashVarCnt":hashVarCnt,
+          "myhashVarCnt":myhashVarCnt,
           "toPy":facts
         };
     }
@@ -2122,8 +2123,8 @@ function debugCDSave(nd)
 function debugCDPrint()
 {
     "use strict";
-    var fd = fs.openSync('cdDebug.txt', 'w+');
-    fs.writeSync(fd, debugCDMsg);
+    // var fd = fs.openSync('cdDebug.txt', 'w+');
+    // fs.writeSync(fd, debugCDMsg);
 }
 
 /*************************************************

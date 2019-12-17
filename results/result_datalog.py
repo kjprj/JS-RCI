@@ -11,7 +11,7 @@ import random
 import shutil
 import urllib
 import operator
-
+import os
 
 from slimit.parser import Parser
 from slimit.visitors import nodevisitor
@@ -114,7 +114,7 @@ ref2         = Function('ref',var, prop, val, BoolSort()) #; call-dep (variable 
 unMarshal   = Function('unMarshal',lineNum, var, val, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
 Marshal     = Function('Marshal',lineNum, var, val, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
 
-Executed    = Function('Executed',lineNum, uid, mval, val, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
+ExecutedStmts    = Function('ExecutedStmts',lineNum, uid, mval, val, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
 ExecutedUid    = Function('ExecutedUid',lineNum, uid, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
 
 ExecutedUMarshal    = Function('ExecutedUMarshal',lineNum, uid, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
@@ -136,7 +136,7 @@ fp.register_relation(ref)
 fp.register_relation(ref2)
 fp.register_relation(unMarshal)
 fp.register_relation(Marshal)
-fp.register_relation(Executed)
+fp.register_relation(ExecutedStmts)
 fp.register_relation(ExecutedUid)
 o1 = Const('o1',obj)
 o2 = Const('o2',obj)
@@ -258,11 +258,11 @@ fp.rule(Marshal(line1, v1, val1),[Write1(v1,line1),ref(v1, val1)])
 # fp.fact(Read2(BitVecVal(2,prop),BitVecVal(17,var),BitVecVal(16736239,lineNum)))
 # fp.fact(ref2(BitVecVal(17,var),BitVecVal(2,prop), BitVecVal(1999,val)))
 
-fp.register_relation(Executed,datadep,unMarshal, Marshal)
+fp.register_relation(ExecutedStmts,datadep,unMarshal, Marshal)
 fp.declare_var(line1,line2,line3, v1,val1,uid1, val2, v2)
 # fp.query(datadep(BitVecVal(1, lineNum),exitLine), Not(datadep(BitVecVal(3, lineNum),exitLine)))
 
-fp.rule(Executed(line1, uid1, val1, val2),
+fp.rule(ExecutedStmts(line1, uid1, val1, val2),
         [
              datadep(line1,line2), Marshal(line2, v1, val2),
              Not(datadep(line1,line3)), unMarshal(line3, v2, val1)
@@ -288,31 +288,6 @@ fp.rule(ExecutedUid(line1, uid1),
              Not(datadep(line3,line1)), Marshal(line3, v2, val2)
         ])
 
-# fp.rule(Executed(line1, uid1, val1, val2),
-#         [
-#              datadep(line2,line1), unMarshal(line2, v1, val1),
-#              Not(datadep(line3,line1)), Marshal(line3, v2, val2)
-#         ])
-
-#fp.rule(Assign(v2,v1,line1),[Calls(o1,line1),MethodRet(o1,v1),CallRet(line1,v2)])
-
-
-#fp.rule(Executed(line1, uid1),[datadep(line2,line1), unMarshal(line2, v1, val1)])
-
-# fp.register_relation(Marshal,Read1,ref)
-# fp.declare_var(line1,v1,val1)
-#fp.rule(Marshal(line1, v1, val1),[Read1(v1,line1),ref(v1, val1)])
-
-#code[11742563]="var id = TempV1.id;"
-#fp.fact(Write1(BitVecVal(20,obj),BitVecVal(11742563,lineNum)))
-#fp.fact(Read2(BitVecVal(18,obj),BitVecVal(20,var),BitVecVal(11742563,lineNum)))
-#fp.fact(Load(BitVecVal(20,var),BitVecVal(18,prop), BitVecVal(20,var),BitVecVal(11742563,lineNum)))
-#fp.fact(Stmt(BitVecVal(11742563,lineNum),BitVecVal(16,obj)))
-#VariableDecl: var TempV0 = speakers[id];
-#code[3498392]="var TempV0 = speakers[id];"
-#fp.fact(Read2(BitVecVal(2,obj),BitVecVal(20,var),BitVecVal(3498392,lineNum)))
-#fp.fact(Load(BitVecVal(21,var),BitVecVal(2,prop), BitVecVal(20,var),BitVecVal(3498392,lineNum)))
-#fp.fact(Stmt(BitVecVal(3498392,lineNum),BitVecVal(16,obj)))
 
 fp.register_relation(datadep,Load,Read2)
 fp.declare_var(line1,line2,v1,v2,o1,f1)
@@ -322,20 +297,6 @@ fp.register_relation(datadep,Write1,Read2)
 fp.declare_var(line1,line2,v1,f1)
 fp.rule(datadep(line1,line2),[Write1(v1,line1),Read2(v1,f1,line2)])
 
-
-'''
-    code[11390510]="var TempV1 = id - 1;"
-    fp.fact(Read1(BitVecVal(16,var),BitVecVal(11390510,lineNum)))
-    fp.fact(Assign(BitVecVal(17,var),BitVecVal(16,obj),BitVecVal(11390510,lineNum)))
-    fp.fact(Heap(BitVecVal(25,var),BitVecVal(26,obj)))
-    fp.fact(Assign(BitVecVal(17,var),BitVecVal(25,obj),BitVecVal(11390510,lineNum)))
-    fp.fact(Stmt(BitVecVal(11390510,lineNum),BitVecVal(12,obj)))
-    #1111VariableDecl: var TempV0 = BROKERS[TempV1]; 17: TempV1
-    code[10199495]="var TempV0 = BROKERS[TempV1];"
-    fp.fact(Read2(BitVecVal(2,obj),BitVecVal(17,var),BitVecVal(10199495,lineNum)))
-    fp.fact(Load(BitVecVal(27,var),BitVecVal(2,prop), BitVecVal(17,var),BitVecVal(10199495,lineNum)))
-    fp.fact(Stmt(BitVecVal(10199495,lineNum),BitVecVal(12,obj)))
-    '''
 
 fp.register_relation(datadep,Assign,Read2)
 fp.declare_var(line1,line2,v1,o1,o2)
@@ -380,15 +341,6 @@ fp.rule(controldep(line1,line2),[Actual(line1,BitVecVal(0,num), v1), FuncDecl(v1
 fp.register_relation(controldep,controldep)
 fp.declare_var(line1,line2,line3)
 fp.rule(controldep(line1,line3),[controldep(line1,line2),controldep(line2,line3)])
-
-
-# fp.register_relation(controldep,controldep)
-# fp.declare_var(line1,line2)
-# fp.rule(controldep(line1,line2),controldep(line2,line1))
-# fp.fact(Actual(BitVecVal(14817998,lineNum), BitVecVal(0,num), BitVecVal(9,var)))
-# fp.fact(FuncDecl(BitVecVal(9,var),BitVecVal(8,obj),BitVecVal(10908367,lineNum)))
-
-
 
 
 fp.register_relation(controldep,datadep)
@@ -1034,39 +986,259 @@ hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1735:17
 hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1735:1742"]={"bin":1224, "name":"exports"};
 hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1743:1747"]={"bin":1225, "name":"like"};
 hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1750:1754"]={"bin":1226, "name":"like"};
+#Assignment: exports.data = [\n        {\n            id: 1,\n            city: 'Boston',\n            state: 'MA',\n            price: '$475,000',\n            title: 'Condominium Redefined',\n            beds: 2,\n            baths: 2,\n            likes: 5,\n            broker: {\n                id: 1,\n                name: \"Caroline Kingsley\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/caroline_kingsley.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house08wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house08sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 2,\n            city: 'Cambridge',\n            state: 'MA',\n            price: '$1,200,000',\n            title: 'Ultimate Sophistication',\n            beds: 5,\n            baths: 4,\n            likes: 2,\n            broker: {\n                id: 2,\n                name: \"Michael Jones\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/michael_jones.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house02wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house02sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 3,\n            city: 'Boston',\n            state: 'MA',\n            price: '$650,000',\n            title: 'Seaport District Retreat',\n            beds: 3,\n            baths: 2,\n            likes: 6,\n            broker: {\n                id: 3,\n                name: \"Jonathan Bradley\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/jonathan_bradley.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house09wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house09sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 4,\n            city: 'Boston',\n            state: 'MA',\n            price: '$875,000',\n            title: 'Modern City Living',\n            beds: 3,\n            baths: 2,\n            likes: 12,\n            broker: {\n                id: 4,\n                name: \"Jennifer Wu\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/jennifer_wu.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house14.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house14sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 5,\n            city: 'Boston',\n            state: 'MA',\n            zip: '02420',\n            price: '$425,000',\n            title: 'Urban Efficiency',\n            beds: 4,\n            baths: 2,\n            likes: 5,\n            broker: {\n                id: 5,\n                name: \"Olivia Green\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/olivia_green.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house03wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house03sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 6,\n            city: 'Boston',\n            state: 'MA',\n            price: '$550,000',\n            title: 'Waterfront in the City',\n            beds: 3,\n            baths: 2,\n            likes: 14,\n            broker: {\n                id: 6,\n                name: \"Miriam Aupont\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/miriam_aupont.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house05wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house05sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 7,\n            city: 'Brookline',\n            state: 'MA',\n            zip: '02420',\n            price: '$850,000',\n            title: 'Suburban Extravaganza',\n            beds: 5,\n            baths: 4,\n            likes: 5,\n            broker: {\n                id: 7,\n                name: \"Michelle Lambert\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/michelle_lambert.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house07wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house07sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 8,\n            city: 'Boston',\n            state: 'MA',\n            zip: '02420',\n            price: '$925,000',\n            title: 'Contemporary Luxury',\n            beds: 6,\n            baths: 6,\n            sqft: 950,\n            likes: 8,\n            broker: {\n                id: 8,\n                name: \"Victor Oachoa\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/victor_ochoa.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house12wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house12sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 9,\n            city: 'Cambridge',\n            state: 'MA',\n            zip: '02420',\n            price: '$550,000',\n            title: 'Heart of Harvard Square',\n            beds: 5,\n            baths: 4,\n            likes: 9,\n            broker: {\n                id: 1,\n                name: \"Caroline Kingsley\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/caroline_kingsley.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house10.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house10sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 10,\n            city: 'Boston',\n            state: 'MA',\n            zip: '02420',\n            price: '$375,000',\n            title: 'Architectural Details',\n            beds: 2,\n            baths: 2,\n            likes: 10,\n            broker: {\n                id: 2,\n                name: \"Michael Jones\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/michael_jones.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house11wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house11sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 11,\n            city: 'Boston',\n            state: 'MA',\n            zip: '02420',\n            price: '$495,000',\n            title: 'Modern Elegance',\n            beds: 2,\n            baths: 2,\n            likes: 16,\n            broker: {\n                id: 3,\n                name: \"Jonathan Bradley\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/jonathan_bradley.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house13wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house13sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 12,\n            city: 'Boston',\n            state: 'MA',\n            zip: '02420',\n            price: '$625,000',\n            title: 'Stunning Colonial',\n            beds: 4,\n            baths: 2,\n            likes: 9,\n            broker: {\n                id: 4,\n                name: \"Jennifer Wu\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/jennifer_wu.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house06wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house06sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 13,\n            city: 'Cambridge',\n            state: 'MA',\n            zip: '02420',\n            price: '$430,000',\n            title: 'Quiet Retreat',\n            beds: 5,\n            baths:4,\n            likes: 18,\n            broker: {\n                id: 5,\n                name: \"Olivia Green\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/olivia_green.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house04.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house04sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 14,\n            city: 'Cambridge',\n            state: 'MA',\n            zip: '01742',\n            price: '$450,000',\n            title: 'Victorian Revival',\n            beds: 4,\n            baths:3,\n            sqft: 3800,\n            likes: 10,\n            broker: {\n                id: 6,\n                name: \"Miriam Aupont\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/miriam_aupont.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house01wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house01sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        }\n    ];"
+code[1227]="exports.data = [\n        {\n            id: 1,\n            city: 'Boston',\n            state: 'MA',\n            price: '$475,000',\n            title: 'Condominium Redefined',\n            beds: 2,\n            baths: 2,\n            likes: 5,\n            broker: {\n                id: 1,\n                name: \"Caroline Kingsley\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/caroline_kingsley.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house08wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house08sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 2,\n            city: 'Cambridge',\n            state: 'MA',\n            price: '$1,200,000',\n            title: 'Ultimate Sophistication',\n            beds: 5,\n            baths: 4,\n            likes: 2,\n            broker: {\n                id: 2,\n                name: \"Michael Jones\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/michael_jones.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house02wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house02sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 3,\n            city: 'Boston',\n            state: 'MA',\n            price: '$650,000',\n            title: 'Seaport District Retreat',\n            beds: 3,\n            baths: 2,\n            likes: 6,\n            broker: {\n                id: 3,\n                name: \"Jonathan Bradley\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/jonathan_bradley.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house09wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house09sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 4,\n            city: 'Boston',\n            state: 'MA',\n            price: '$875,000',\n            title: 'Modern City Living',\n            beds: 3,\n            baths: 2,\n            likes: 12,\n            broker: {\n                id: 4,\n                name: \"Jennifer Wu\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/jennifer_wu.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house14.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house14sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 5,\n            city: 'Boston',\n            state: 'MA',\n            zip: '02420',\n            price: '$425,000',\n            title: 'Urban Efficiency',\n            beds: 4,\n            baths: 2,\n            likes: 5,\n            broker: {\n                id: 5,\n                name: \"Olivia Green\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/olivia_green.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house03wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house03sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 6,\n            city: 'Boston',\n            state: 'MA',\n            price: '$550,000',\n            title: 'Waterfront in the City',\n            beds: 3,\n            baths: 2,\n            likes: 14,\n            broker: {\n                id: 6,\n                name: \"Miriam Aupont\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/miriam_aupont.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house05wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house05sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 7,\n            city: 'Brookline',\n            state: 'MA',\n            zip: '02420',\n            price: '$850,000',\n            title: 'Suburban Extravaganza',\n            beds: 5,\n            baths: 4,\n            likes: 5,\n            broker: {\n                id: 7,\n                name: \"Michelle Lambert\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/michelle_lambert.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house07wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house07sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 8,\n            city: 'Boston',\n            state: 'MA',\n            zip: '02420',\n            price: '$925,000',\n            title: 'Contemporary Luxury',\n            beds: 6,\n            baths: 6,\n            sqft: 950,\n            likes: 8,\n            broker: {\n                id: 8,\n                name: \"Victor Oachoa\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/victor_ochoa.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house12wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house12sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 9,\n            city: 'Cambridge',\n            state: 'MA',\n            zip: '02420',\n            price: '$550,000',\n            title: 'Heart of Harvard Square',\n            beds: 5,\n            baths: 4,\n            likes: 9,\n            broker: {\n                id: 1,\n                name: \"Caroline Kingsley\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/caroline_kingsley.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house10.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house10sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 10,\n            city: 'Boston',\n            state: 'MA',\n            zip: '02420',\n            price: '$375,000',\n            title: 'Architectural Details',\n            beds: 2,\n            baths: 2,\n            likes: 10,\n            broker: {\n                id: 2,\n                name: \"Michael Jones\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/michael_jones.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house11wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house11sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 11,\n            city: 'Boston',\n            state: 'MA',\n            zip: '02420',\n            price: '$495,000',\n            title: 'Modern Elegance',\n            beds: 2,\n            baths: 2,\n            likes: 16,\n            broker: {\n                id: 3,\n                name: \"Jonathan Bradley\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/jonathan_bradley.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house13wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house13sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 12,\n            city: 'Boston',\n            state: 'MA',\n            zip: '02420',\n            price: '$625,000',\n            title: 'Stunning Colonial',\n            beds: 4,\n            baths: 2,\n            likes: 9,\n            broker: {\n                id: 4,\n                name: \"Jennifer Wu\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/jennifer_wu.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house06wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house06sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 13,\n            city: 'Cambridge',\n            state: 'MA',\n            zip: '02420',\n            price: '$430,000',\n            title: 'Quiet Retreat',\n            beds: 5,\n            baths:4,\n            likes: 18,\n            broker: {\n                id: 5,\n                name: \"Olivia Green\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/olivia_green.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house04.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house04sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 14,\n            city: 'Cambridge',\n            state: 'MA',\n            zip: '01742',\n            price: '$450,000',\n            title: 'Victorian Revival',\n            beds: 4,\n            baths:3,\n            sqft: 3800,\n            likes: 10,\n            broker: {\n                id: 6,\n                name: \"Miriam Aupont\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/miriam_aupont.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house01wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house01sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        }\n    ];"
+fp.fact(Write2(BitVecVal(1228,obj),BitVecVal(1229,var), BitVecVal(1227,lineNum)))
+fp.fact(Heap(BitVecVal(1230,var),BitVecVal(1232,obj)))
+fp.fact(Store(BitVecVal(1224,var),BitVecVal(1005,var), BitVecVal(1233,prop), BitVecVal(1227,lineNum)))
 
 
-fp.fact(ref(BitVecVal(hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:476:478"]["bin"],var),BitVecVal(1888,val)))
-fp.fact(ref(BitVecVal(hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:527:532"]["bin"],var),BitVecVal(1999,val)))
 
-# fp.fact(ref2(BitVecVal(hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:535:545"]["bin"],var),BitVecVal(hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:546:552"]["bin"],prop), BitVecVal(1999,val)))
 
-# hashVar["norm_property-service.js:132:137"]={"bin":1013, "name":"tmpv0"};
-# hashVar["norm_property-service.js:140:150"]
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:-1:-1"]={"bin":1000, "name":"var dummyvar;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:14:65"]={"bin":1001, "name":"var PROPERTIES = require('./mock-properties').data;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:18:28"]={"bin":1002, "name":"PROPERTIES"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:31:59"]={"bin":1003, "name":"require('./mock-properties')"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:31:64"]={"bin":1004, "name":"require('./mock-properties').data"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:60:64"]={"bin":1005, "name":"data"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:89:174"]={"bin":1006, "name":"function findAll(req, res, next) {\n    var tmpv0 = PROPERTIES;\n    res.json(tmpv0);\n}"};
+hashVar["O_findAll"]={"bin":1007, "name":"O_findAll"};
+hashVar["findAll"]={"bin":1008, "name":"findAll"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:106:109"]={"bin":1009, "name":"req"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:111:114"]={"bin":1010, "name":"res"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:116:120"]={"bin":1011, "name":"next"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:128:151"]={"bin":1012, "name":"var tmpv0 = PROPERTIES;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:132:137"]={"bin":1013, "name":"tmpv0"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:140:150"]={"bin":1002, "name":"PROPERTIES"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:156:172"]={"bin":1014, "name":"res.json(tmpv0);"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:174:175"]={"bin":1015, "name":";"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:178:371"]={"bin":1016, "name":"function findById(req, res, next) {\n    var temp4 = req.params;\n    var idd2 = temp4.id;\n    var temp5 = idd2-1;\n    var temp6 = PROPERTIES[temp5];\n    var tmpv1 = temp6;\n    res.json(tmpv1);\n}"};
+hashVar["O_findById"]={"bin":1017, "name":"O_findById"};
+hashVar["findById"]={"bin":1018, "name":"findById"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:196:199"]={"bin":1019, "name":"req"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:201:204"]={"bin":1020, "name":"res"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:206:210"]={"bin":1021, "name":"next"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:218:241"]={"bin":1022, "name":"var temp4 = req.params;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:222:227"]={"bin":1023, "name":"temp4"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:230:233"]={"bin":1019, "name":"req"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:230:240"]={"bin":1024, "name":"req.params"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:234:240"]={"bin":1025, "name":"params"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:246:266"]={"bin":1026, "name":"var idd2 = temp4.id;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:250:254"]={"bin":1027, "name":"idd2"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:257:262"]={"bin":1023, "name":"temp4"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:257:265"]={"bin":1028, "name":"temp4.id"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:263:265"]={"bin":1029, "name":"id"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:271:290"]={"bin":1030, "name":"var temp5 = idd2-1;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:275:280"]={"bin":1031, "name":"temp5"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:283:287"]={"bin":1027, "name":"idd2"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:295:325"]={"bin":1036, "name":"var temp6 = PROPERTIES[temp5];"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:299:304"]={"bin":1037, "name":"temp6"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:307:317"]={"bin":1002, "name":"PROPERTIES"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:307:324"]={"bin":1038, "name":"PROPERTIES[temp5]"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:318:323"]={"bin":1031, "name":"temp5"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:330:348"]={"bin":1039, "name":"var tmpv1 = temp6;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:334:339"]={"bin":1040, "name":"tmpv1"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:342:347"]={"bin":1037, "name":"temp6"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:353:369"]={"bin":1041, "name":"res.json(tmpv1);"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:401:578"]={"bin":1042, "name":"function findById(req, res, next) {\n     var tmpv13 = req.params;\n     var id = tmpv13.id;\n     var tmpv10 = id - 1;\n     var tmpv2 = PROPERTIES[tmpv10];\n     res.json(tmpv2);\n}"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:419:422"]={"bin":1043, "name":"req"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:424:427"]={"bin":1044, "name":"res"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:429:433"]={"bin":1045, "name":"next"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:442:466"]={"bin":1046, "name":"var tmpv13 = req.params;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:446:452"]={"bin":1047, "name":"tmpv13"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:455:458"]={"bin":1043, "name":"req"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:455:465"]={"bin":1048, "name":"req.params"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:459:465"]={"bin":1049, "name":"params"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:472:491"]={"bin":1050, "name":"var id = tmpv13.id;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:476:478"]={"bin":1051, "name":"id"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:481:487"]={"bin":1047, "name":"tmpv13"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:481:490"]={"bin":1052, "name":"tmpv13.id"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:488:490"]={"bin":1053, "name":"id"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:497:517"]={"bin":1054, "name":"var tmpv10 = id - 1;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:501:507"]={"bin":1055, "name":"tmpv10"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:510:512"]={"bin":1051, "name":"id"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:523:554"]={"bin":1060, "name":"var tmpv2 = PROPERTIES[tmpv10];"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:527:532"]={"bin":1061, "name":"tmpv2"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:535:545"]={"bin":1002, "name":"PROPERTIES"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:535:553"]={"bin":1062, "name":"PROPERTIES[tmpv10]"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:546:552"]={"bin":1055, "name":"tmpv10"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:560:576"]={"bin":1063, "name":"res.json(tmpv2);"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:582:671"]={"bin":1064, "name":"function getFavorites(req, res, next) {\n    var tmpv3 = favorites;\n    res.json(tmpv3);\n}"};
+hashVar["O_getFavorites"]={"bin":1065, "name":"O_getFavorites"};
+hashVar["getFavorites"]={"bin":1066, "name":"getFavorites"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:604:607"]={"bin":1067, "name":"req"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:609:612"]={"bin":1068, "name":"res"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:614:618"]={"bin":1069, "name":"next"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:626:648"]={"bin":1070, "name":"var tmpv3 = favorites;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:630:635"]={"bin":1071, "name":"tmpv3"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:638:647"]={"bin":1072, "name":"favorites"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:653:669"]={"bin":1073, "name":"res.json(tmpv3);"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:673:1034"]={"bin":1074, "name":"function favorite(req, res, next) {\n    var property = req.body;\n    var exists = false;\n    for (var i = 0; i < favorites.length; i++) {\n        if (favorites[i].id === property.id) {\n            exists = true;\n            break;\n        }\n    }\n    if (!exists) var tmpv4 = property;\n    favorites.push(tmpv4);\n    var tmpv5 = \"success\";\n    res.send(tmpv5)\n}"};
+hashVar["O_favorite"]={"bin":1075, "name":"O_favorite"};
+hashVar["favorite"]={"bin":1076, "name":"favorite"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:691:694"]={"bin":1077, "name":"req"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:696:699"]={"bin":1078, "name":"res"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:701:705"]={"bin":1079, "name":"next"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:713:737"]={"bin":1080, "name":"var property = req.body;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:717:725"]={"bin":1081, "name":"property"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:728:731"]={"bin":1077, "name":"req"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:728:736"]={"bin":1082, "name":"req.body"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:732:736"]={"bin":1083, "name":"body"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:742:761"]={"bin":1084, "name":"var exists = false;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:746:752"]={"bin":1085, "name":"exists"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:766:919"]={"bin":1090, "name":"for (var i = 0; i < favorites.length; i++) {\n        if (favorites[i].id === property.id) {\n            exists = true;\n            break;\n        }\n    }"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:771:780"]={"bin":1091, "name":"var i = 0"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:782:802"]={"bin":1092, "name":"i < favorites.length"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:804:807"]={"bin":1093, "name":"i++"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:775:776"]={"bin":1094, "name":"i"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:782:783"]={"bin":1094, "name":"i"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:786:795"]={"bin":1099, "name":"favorites"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:786:802"]={"bin":1100, "name":"favorites.length"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:796:802"]={"bin":1101, "name":"length"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:804:805"]={"bin":1094, "name":"i"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:819:913"]={"bin":1102, "name":"if (favorites[i].id === property.id) {\n            exists = true;\n            break;\n        }"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:823:854"]={"bin":1103, "name":"favorites[i].id === property.id"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:823:832"]={"bin":1104, "name":"favorites"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:823:835"]={"bin":1105, "name":"favorites[i]"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:833:834"]={"bin":1094, "name":"i"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:843:851"]={"bin":1081, "name":"property"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:843:854"]={"bin":1106, "name":"property.id"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:852:854"]={"bin":1107, "name":"id"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:870:884"]={"bin":1108, "name":"exists = true;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:870:876"]={"bin":1085, "name":"exists"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:897:903"]={"bin":1113, "name":"break;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:924:958"]={"bin":1114, "name":"if (!exists) var tmpv4 = property;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:928:935"]={"bin":1115, "name":"!exists"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:937:958"]={"bin":1116, "name":"var tmpv4 = property;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:941:946"]={"bin":1117, "name":"tmpv4"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:949:957"]={"bin":1081, "name":"property"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:963:985"]={"bin":1118, "name":"favorites.push(tmpv4);"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:990:1012"]={"bin":1119, "name":"var tmpv5 = \"success\";"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:994:999"]={"bin":1120, "name":"tmpv5"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1017:1032"]={"bin":1125, "name":"res.send(tmpv5)"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1036:1363"]={"bin":1126, "name":"function unfavorite(req, res, next) {\n    var tmpv14 = req.params;\nvar id = tmpv14.id;\n    for (var i = 0; i < favorites.length; i++) {\n        if (favorites[i].id == id) {\n            var tmpv6 = i;\n\nvar tmpv7 = 1;\nfavorites.splice(tmpv6, tmpv7);\n            break;\n        }\n    }\n    var tmpv8 = favorites;\nres.json(tmpv8)\n}"};
+hashVar["O_unfavorite"]={"bin":1127, "name":"O_unfavorite"};
+hashVar["unfavorite"]={"bin":1128, "name":"unfavorite"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1056:1059"]={"bin":1129, "name":"req"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1061:1064"]={"bin":1130, "name":"res"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1066:1070"]={"bin":1131, "name":"next"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1078:1102"]={"bin":1132, "name":"var tmpv14 = req.params;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1082:1088"]={"bin":1133, "name":"tmpv14"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1091:1094"]={"bin":1129, "name":"req"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1091:1101"]={"bin":1134, "name":"req.params"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1095:1101"]={"bin":1135, "name":"params"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1103:1122"]={"bin":1136, "name":"var id = tmpv14.id;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1107:1109"]={"bin":1137, "name":"id"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1112:1118"]={"bin":1133, "name":"tmpv14"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1112:1121"]={"bin":1138, "name":"tmpv14.id"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1119:1121"]={"bin":1139, "name":"id"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1127:1318"]={"bin":1140, "name":"for (var i = 0; i < favorites.length; i++) {\n        if (favorites[i].id == id) {\n            var tmpv6 = i;\n\nvar tmpv7 = 1;\nfavorites.splice(tmpv6, tmpv7);\n            break;\n        }\n    }"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1132:1141"]={"bin":1141, "name":"var i = 0"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1143:1163"]={"bin":1142, "name":"i < favorites.length"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1165:1168"]={"bin":1143, "name":"i++"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1136:1137"]={"bin":1144, "name":"i"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1143:1144"]={"bin":1144, "name":"i"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1147:1156"]={"bin":1149, "name":"favorites"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1147:1163"]={"bin":1150, "name":"favorites.length"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1157:1163"]={"bin":1151, "name":"length"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1165:1166"]={"bin":1144, "name":"i"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1180:1312"]={"bin":1152, "name":"if (favorites[i].id == id) {\n            var tmpv6 = i;\n\nvar tmpv7 = 1;\nfavorites.splice(tmpv6, tmpv7);\n            break;\n        }"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1184:1205"]={"bin":1153, "name":"favorites[i].id == id"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1184:1193"]={"bin":1154, "name":"favorites"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1184:1196"]={"bin":1155, "name":"favorites[i]"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1194:1195"]={"bin":1144, "name":"i"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1203:1205"]={"bin":1137, "name":"id"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1221:1235"]={"bin":1156, "name":"var tmpv6 = i;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1225:1230"]={"bin":1157, "name":"tmpv6"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1233:1234"]={"bin":1144, "name":"i"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1237:1251"]={"bin":1158, "name":"var tmpv7 = 1;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1241:1246"]={"bin":1159, "name":"tmpv7"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1252:1283"]={"bin":1164, "name":"favorites.splice(tmpv6, tmpv7);"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1296:1302"]={"bin":1165, "name":"break;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1323:1345"]={"bin":1166, "name":"var tmpv8 = favorites;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1327:1332"]={"bin":1167, "name":"tmpv8"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1335:1344"]={"bin":1168, "name":"favorites"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1346:1361"]={"bin":1169, "name":"res.json(tmpv8)"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1365:1578"]={"bin":1170, "name":"function like(req, res, next) {\n    var property = req.body;\n    var tmpv11 = property.id - 1;\nPROPERTIES[tmpv11].likes++;\n    var tmpv12 = property.id - 1;\nvar tmpv9 = PROPERTIES[tmpv12].likes;\nres.json(tmpv9);\n}"};
+hashVar["O_like"]={"bin":1171, "name":"O_like"};
+hashVar["like"]={"bin":1172, "name":"like"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1379:1382"]={"bin":1173, "name":"req"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1384:1387"]={"bin":1174, "name":"res"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1389:1393"]={"bin":1175, "name":"next"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1401:1425"]={"bin":1176, "name":"var property = req.body;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1405:1413"]={"bin":1177, "name":"property"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1416:1419"]={"bin":1173, "name":"req"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1416:1424"]={"bin":1178, "name":"req.body"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1420:1424"]={"bin":1179, "name":"body"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1430:1459"]={"bin":1180, "name":"var tmpv11 = property.id - 1;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1434:1440"]={"bin":1181, "name":"tmpv11"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1443:1451"]={"bin":1177, "name":"property"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1443:1454"]={"bin":1182, "name":"property.id"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1452:1454"]={"bin":1183, "name":"id"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1460:1487"]={"bin":1188, "name":"PROPERTIES[tmpv11].likes++;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1460:1470"]={"bin":1002, "name":"PROPERTIES"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1471:1477"]={"bin":1181, "name":"tmpv11"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1460:1478"]={"bin":1189, "name":"PROPERTIES[tmpv11]"};
+hashVar["ttemp0"]={"bin":1190, "name":"ttemp0"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1492:1521"]={"bin":1191, "name":"var tmpv12 = property.id - 1;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1496:1502"]={"bin":1192, "name":"tmpv12"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1505:1513"]={"bin":1177, "name":"property"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1505:1516"]={"bin":1193, "name":"property.id"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1514:1516"]={"bin":1194, "name":"id"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1522:1559"]={"bin":1199, "name":"var tmpv9 = PROPERTIES[tmpv12].likes;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1526:1531"]={"bin":1200, "name":"tmpv9"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1534:1544"]={"bin":1002, "name":"PROPERTIES"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1534:1552"]={"bin":1201, "name":"PROPERTIES[tmpv12]"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1545:1551"]={"bin":1192, "name":"tmpv12"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1560:1576"]={"bin":1202, "name":"res.json(tmpv9);"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1580:1606"]={"bin":1203, "name":"exports.findAll = findAll;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1580:1587"]={"bin":1204, "name":"exports"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1588:1595"]={"bin":1205, "name":"findAll"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1598:1605"]={"bin":1206, "name":"findAll"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1607:1635"]={"bin":1207, "name":"exports.findById = findById;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1607:1614"]={"bin":1208, "name":"exports"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1615:1623"]={"bin":1209, "name":"findById"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1626:1634"]={"bin":1210, "name":"findById"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1636:1672"]={"bin":1211, "name":"exports.getFavorites = getFavorites;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1636:1643"]={"bin":1212, "name":"exports"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1644:1656"]={"bin":1213, "name":"getFavorites"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1659:1671"]={"bin":1214, "name":"getFavorites"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1673:1701"]={"bin":1215, "name":"exports.favorite = favorite;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1673:1680"]={"bin":1216, "name":"exports"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1681:1689"]={"bin":1217, "name":"favorite"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1692:1700"]={"bin":1218, "name":"favorite"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1702:1734"]={"bin":1219, "name":"exports.unfavorite = unfavorite;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1702:1709"]={"bin":1220, "name":"exports"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1710:1720"]={"bin":1221, "name":"unfavorite"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1723:1733"]={"bin":1222, "name":"unfavorite"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1735:1755"]={"bin":1223, "name":"exports.like = like;"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1735:1742"]={"bin":1224, "name":"exports"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1743:1747"]={"bin":1225, "name":"like"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:1750:1754"]={"bin":1226, "name":"like"};
+hashVar["dVXRLg.js:21:11646"]={"bin":1227, "name":"exports.data = [\n        {\n            id: 1,\n            city: 'Boston',\n            state: 'MA',\n            price: '$475,000',\n            title: 'Condominium Redefined',\n            beds: 2,\n            baths: 2,\n            likes: 5,\n            broker: {\n                id: 1,\n                name: \"Caroline Kingsley\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/caroline_kingsley.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house08wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house08sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 2,\n            city: 'Cambridge',\n            state: 'MA',\n            price: '$1,200,000',\n            title: 'Ultimate Sophistication',\n            beds: 5,\n            baths: 4,\n            likes: 2,\n            broker: {\n                id: 2,\n                name: \"Michael Jones\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/michael_jones.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house02wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house02sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 3,\n            city: 'Boston',\n            state: 'MA',\n            price: '$650,000',\n            title: 'Seaport District Retreat',\n            beds: 3,\n            baths: 2,\n            likes: 6,\n            broker: {\n                id: 3,\n                name: \"Jonathan Bradley\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/jonathan_bradley.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house09wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house09sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 4,\n            city: 'Boston',\n            state: 'MA',\n            price: '$875,000',\n            title: 'Modern City Living',\n            beds: 3,\n            baths: 2,\n            likes: 12,\n            broker: {\n                id: 4,\n                name: \"Jennifer Wu\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/jennifer_wu.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house14.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house14sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 5,\n            city: 'Boston',\n            state: 'MA',\n            zip: '02420',\n            price: '$425,000',\n            title: 'Urban Efficiency',\n            beds: 4,\n            baths: 2,\n            likes: 5,\n            broker: {\n                id: 5,\n                name: \"Olivia Green\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/olivia_green.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house03wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house03sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 6,\n            city: 'Boston',\n            state: 'MA',\n            price: '$550,000',\n            title: 'Waterfront in the City',\n            beds: 3,\n            baths: 2,\n            likes: 14,\n            broker: {\n                id: 6,\n                name: \"Miriam Aupont\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/miriam_aupont.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house05wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house05sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 7,\n            city: 'Brookline',\n            state: 'MA',\n            zip: '02420',\n            price: '$850,000',\n            title: 'Suburban Extravaganza',\n            beds: 5,\n            baths: 4,\n            likes: 5,\n            broker: {\n                id: 7,\n                name: \"Michelle Lambert\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/michelle_lambert.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house07wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house07sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 8,\n            city: 'Boston',\n            state: 'MA',\n            zip: '02420',\n            price: '$925,000',\n            title: 'Contemporary Luxury',\n            beds: 6,\n            baths: 6,\n            sqft: 950,\n            likes: 8,\n            broker: {\n                id: 8,\n                name: \"Victor Oachoa\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/victor_ochoa.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house12wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house12sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 9,\n            city: 'Cambridge',\n            state: 'MA',\n            zip: '02420',\n            price: '$550,000',\n            title: 'Heart of Harvard Square',\n            beds: 5,\n            baths: 4,\n            likes: 9,\n            broker: {\n                id: 1,\n                name: \"Caroline Kingsley\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/caroline_kingsley.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house10.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house10sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 10,\n            city: 'Boston',\n            state: 'MA',\n            zip: '02420',\n            price: '$375,000',\n            title: 'Architectural Details',\n            beds: 2,\n            baths: 2,\n            likes: 10,\n            broker: {\n                id: 2,\n                name: \"Michael Jones\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/michael_jones.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house11wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house11sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 11,\n            city: 'Boston',\n            state: 'MA',\n            zip: '02420',\n            price: '$495,000',\n            title: 'Modern Elegance',\n            beds: 2,\n            baths: 2,\n            likes: 16,\n            broker: {\n                id: 3,\n                name: \"Jonathan Bradley\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/jonathan_bradley.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house13wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house13sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 12,\n            city: 'Boston',\n            state: 'MA',\n            zip: '02420',\n            price: '$625,000',\n            title: 'Stunning Colonial',\n            beds: 4,\n            baths: 2,\n            likes: 9,\n            broker: {\n                id: 4,\n                name: \"Jennifer Wu\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/jennifer_wu.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house06wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house06sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 13,\n            city: 'Cambridge',\n            state: 'MA',\n            zip: '02420',\n            price: '$430,000',\n            title: 'Quiet Retreat',\n            beds: 5,\n            baths:4,\n            likes: 18,\n            broker: {\n                id: 5,\n                name: \"Olivia Green\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/olivia_green.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house04.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house04sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        },\n        {\n            id: 14,\n            city: 'Cambridge',\n            state: 'MA',\n            zip: '01742',\n            price: '$450,000',\n            title: 'Victorian Revival',\n            beds: 4,\n            baths:3,\n            sqft: 3800,\n            likes: 10,\n            broker: {\n                id: 6,\n                name: \"Miriam Aupont\",\n                title: \"Senior Broker\",\n                picture: \"https://s3-us-west-1.amazonaws.com/sfdc-demo/people/miriam_aupont.jpg\"\n            },\n            pic: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house01wide.jpg',\n            thumb: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/realty/house01sq.jpg',\n            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad.'\n        }\n    ];"};
+hashVar["dVXRLg.js:21:28"]={"bin":1228, "name":"exports"};
+hashVar["dVXRLg.js:29:33"]={"bin":1229, "name":"data"};
+hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:14:65"]["name"]="var PROPERTIES = require('dVXRLg').data;";
+code[hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:14:65"]["bin"]]="var PROPERTIES = require('dVXRLg').data;";
+fp.fact(datadep(BitVecVal(hashVar["dVXRLg.js:21:11646"]["bin"],lineNum),BitVecVal(hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:14:65"]["bin"],lineNum)))
+boundToExtractFunction = 1226;
+fp.fact(ref(BitVecVal(hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:476:478"]["bin"],var),BitVecVal(3062344,val)))
+fp.fact(ref(BitVecVal(hashVar["subject_apps/ionic2-realty-rest/server/norm_property-service.js:527:532"]["bin"],var),BitVecVal(2348502,val)))
 
-# function to return key for any value
-
-#fp.fact(ref2(BitVecVal(1001,var),BitVecVal(1019,prop), BitVecVal(1999,val)))
-
-# fp.fact(ref2(BitVecVal(hashVar["TempV1"],var),BitVecVal(hashVar["BROKERS"],prop), BitVecVal(1999,val)))
-
-# fp.fact(ref(BitVecVal(hashVar["norm_property-service.js:436:455"]['bin'],var),BitVecVal(1888,val)))
-# fp.fact(ref2(BitVecVal(hashVar["norm_property-service.js:487:518"]['bin'],var),BitVecVal(hashVar["norm_property-service.js:465:471"]['bin'],prop), BitVecVal(1999,val)))
-
-# print hashVar["norm_property-service.js:436:455"]['bin']
 exitLine = Const('exit', lineNum)
 fp.declare_var(exitLine)
 
-fp.query(unMarshal(line2, v1, 1888))
+fp.query(unMarshal(line2, v1, 3062344))
 v_ex = fp.get_answer()
 unmarshal_stmt = v_ex.arg(1).arg(1).as_long()
 unmarshal_stmt_start = get_key(unmarshal_stmt).split(":")[1]
-print "unMarshal***********  ", colored(v_ex,'magenta'), unmarshal_stmt, unmarshal_stmt_start
+print colored("*********** Constraint Solving Started::::",'magenta')
+print colored( "unMarshal***********",'blue'), unmarshal_stmt, unmarshal_stmt_start
 #
 #
-fp.query(Marshal(line2, v1, 1999))
+fp.query(Marshal(line2, v1, 2348502))
 v_ex = fp.get_answer()
-print "Marshal***********  ", colored(v_ex,'blue'), v_ex
+# print "Marshal***********  ", colored(v_ex,'blue'), v_ex
 
 
 # fp.fact(Load(BitVecVal(27,var),BitVecVal(2,prop), BitVecVal(17,var),BitVecVal(16736239,lineNum)))
@@ -1075,61 +1247,98 @@ print "Marshal***********  ", colored(v_ex,'blue'), v_ex
 marshal_stmt = v_ex.arg(1).arg(1).as_long()
 loadedVar = v_ex.arg(0).arg(1).as_long()
 marshal_stmt_start = get_key(marshal_stmt).split(":")[1]
-print "Marshal***********  ", colored(v_ex,'blue') , marshal_stmt, marshal_stmt_start
+print colored("Marshal***********  ",'blue') , marshal_stmt, marshal_stmt_start
 print "LoadedVar??  ", loadedVar
 # fp.fact(Load(BitVecVal(1028,var),BitVecVal(1001,var), BitVecVal(1020,prop),BitVecVal(1027,lineNum)))
 
 
 fp.query(datadep(exitLine,unmarshal_stmt))
 v_ex = fp.get_answer()
-print "@@@@@@@@@@@@***********  ", v_ex
+# print "@@@@@@@@@@@@***********  ", v_ex
 
 
 fp.query(datadep(exitLine,marshal_stmt))
 v_ex = fp.get_answer()
-print "@@@@@@@@@@@@***********  ", v_ex
+# print "@@@@@@@@@@@@***********  ", v_ex
 
 # fp.query(Load)
 # v_ex = fp.get_answer()
 # print "######################LoadOrAssignVar", v_ex
 
-fp.query(Executed(exitLine, 12313, 1888, 1999))
+fp.query(ExecutedStmts(exitLine, 12313, 3062344, 2348502))
 v_ex = fp.get_answer()
-print "ExecutedExecutedExecuted***********  ", type(v_ex), v_ex
+print colored("ExecutedStmts***********  ",'blue')
+print v_ex
 uid = "abcDe"
 
-
-jscode=""
+jscode="//JS-RCI generated\n"
 
 extract_ftn={};
+extract_globals={};
 extract_others={};
 
 for x in range(0, v_ex.num_args()):
     myposition = get_key(v_ex.arg(x).arg(1).as_long()).split(":")[1];
     if myposition<unmarshal_stmt_start or myposition>marshal_stmt_start:
-        extract_others[myposition]= v_ex.arg(x).arg(1).as_long();
+        extract_globals[myposition]= v_ex.arg(x).arg(1).as_long();
     else:
         extract_ftn[myposition]=v_ex.arg(x).arg(1).as_long();
 
-print "extract_ftn", extract_ftn
-print "extract_others", extract_others
+# print "extract_ftn", extract_ftn
+# print "extract_others", extract_others
+
+print colored("Extracting Functions***********  ",'magenta')
+
+for key in sorted(extract_globals.keys()):
+    if extract_globals[key] > boundToExtractFunction:
+        # print colored(code[extract_globals[key]], 'cyan')
+        otherfilename = get_key(extract_globals[key]).split(":")[0]
+        # print otherfilename
+        if otherfilename in extract_others:
+            extract_others[otherfilename].append(code[extract_globals[key]]);
+        else:
+            extract_others[otherfilename] = [];
+            extract_others[otherfilename].append(code[extract_globals[key]]);
+    else:
+        print colored(code[extract_globals[key]], 'blue')
+        jscode +=code[extract_globals[key]]+"\n"
 
 
-for key in sorted(extract_others.keys()):
-    print colored(code[extract_others[key]], 'red')
-    jscode +=code[extract_others[key]]+"\n"
-
+# print "extract_others", extract_others
 print colored("function "+uid+"(input){","yellow")
 jscode +="function "+uid+"(input){"+"\n"
-print colored(adaptinput(code[unmarshal_stmt],"id"), 'blue')
-
+adaptedIn = adaptinput(code[unmarshal_stmt],"id")
+print colored(adaptedIn, 'blue')
+jscode +=adaptedIn+"\n"
 for key in sorted(extract_ftn.keys()):
     print colored("\t" + code[extract_ftn[key]], 'yellow')
-    jscode += code[extract_ftn[key]] + "\n"
+    jscode += "\t"+code[extract_ftn[key]] + "\n"
 
 print colored(adaptoutput(code[marshal_stmt], loadedVar), 'blue')
 jscode +=adaptoutput(code[marshal_stmt], loadedVar) +"\n"
 print colored("\treturn output;\n}","yellow")
 jscode +="\treturn output;\n}"
-f=open(uid+".js", "w")
-f.write(jscode)
+
+if os.path.isdir("./results"):
+    f=open("results/"+uid+".js", "w")
+    f.write(jscode)
+else:
+    f=open("./"+uid+".js", "w")
+    f.write(jscode)
+
+# print extract_others
+for key in extract_others:
+    # print key, extract_others[key]
+    if os.path.isdir("./results"):
+        f = open("results/"+key, "w")
+    else:
+        f = open("./" + key, "w")
+    txt = "//JS-RCI generated\n"
+    for stmt in extract_others[key]:
+        txt +=stmt
+    f.write(txt)
+    print colored("//depenent statements in File "+key+"\n"+txt, 'cyan')
+
+
+print colored("Extracting Functions DONE!***********  \n See generated JS files in results folder, abcDe.js is entry",'magenta')
+

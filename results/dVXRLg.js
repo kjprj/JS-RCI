@@ -1,4 +1,4 @@
-//mock-properties.js
+//JS-RCI generated
 exports.data = [
         {
             id: 1,

@@ -83,6 +83,7 @@ function traverse(node, func) {
         }
     }
 }
+
 var uidfilename = uid+".js";
 fs1.copySync(fileName, uidfilename);
 
@@ -158,7 +159,7 @@ function analyzeCode(fileName,dr) {
        var pp = path.resolve(rr);
        fs1.copySync(path.resolve(rr), newfileName);
 	     var hash2= getExport(newfileName,property);
-
+            console.log("getExport", newfileName, property);
        if(hash2!=null){
 		     //copy to working directory and find the line# of exports
   		   // console.log(fileName,newfileName, hash1, hash2);
