@@ -1,0 +1,10 @@
+SERVER=subject_apps/Donuts/server.js npm run instrumenting
+http://localhost:8999/donuts/1
+http://localhost:8999/donuts/90001
+http://localhost:8999/donuts/?mode=JSRCIInsourcing
+
+http://localhost:8999/donuts
+http://localhost:8999/donuts/?mode=JSRCIStr
+http://localhost:8999/donuts/?mode=JSRCIInsourcing
+
+

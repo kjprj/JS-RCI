@@ -15,11 +15,11 @@ app.use(compression());
 app.use('/', express.static(__dirname + '/www'));
 
 app.get('/properties', properties.findAll);
-app.get('/properties/favorites', properties.getFavorites);
-app.get('/properties/:id', properties.findById);
-app.post('/properties/likes', properties.like);
-app.post('/properties/favorites', properties.favorite);
-app.delete('/properties/favorites/:id', properties.unfavorite);
+//app.get('/properties/favorites', properties.getFavorites);
+//app.get('/properties/:id', properties.findById);
+//app.post('/properties/likes', properties.like);
+//app.post('/properties/favorites', properties.favorite);
+//app.delete('/properties/favorites/:id', properties.unfavorite);
 
 app.get('/brokers', brokers.findAll);
 app.get('/brokers/:id', brokers.findById);

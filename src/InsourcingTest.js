@@ -165,7 +165,6 @@ function insourcing(param){
     for(var q=0; q< param.sqls.length; q++){
         AAAA+= param.sqls[q]+'\n';
     }//sqls
-    AAAA+="value_sid_unmarshal="+param.entry.value_sid+'\n';
     fs.writeSync(pyfd, AAAA+'\n');
 
     var functiongen = fs.readFileSync('src/z3_rules/functiongen.py').toString()+'\n';
@@ -191,9 +190,10 @@ function testing(namefile){
           var jscode = fs.readFileSync(namefile).toString();
       var cfg = cfgRelated.makeCFG(jscode);
       cfgRelated.buildDominatorTrees(cfg, true);
-      var result = stage2.phase(cfg,0,namefile.replace("results/",""));
+      var result = stage2.phase(cfg,0,namefile);
+      console.log(result.toPy);
 }
 
-module.exports = insourcing;
+module.exports = testing;
 //module.testing = testing;
 // exports.like = like;

@@ -271,3 +271,4 @@ code={};
 hashVar={};
 requires={};
 oline={};
+sqlstmts=[];

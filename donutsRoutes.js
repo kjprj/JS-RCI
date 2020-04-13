@@ -1,16 +1,14 @@
-//JS-RCI
 var express = require('express');
 var router = express.Router();
 var knex = require('../db/knex');
 
 /* GET home page. */
-
-var tmpv2 = '/';
-router.get(tmpv2, function(req, res) {
-var tmpv0 = "select * from donuts";
-knex.raw(tmpv0).then(function(donuts){
-  var tmpv1 = donuts;
-res.send(tmpv1);
+var tmpv0 = '/';
+router.get(tmpv0, function(req, res, next) {
+    var tmpv9="select * from donuts";
+    knex.raw(tmpv9).then(function(donuts){
+        var tmpv10 = donuts;
+        res.send(tmpv10);
   });
 });
 
@@ -18,13 +16,12 @@ var tmpv5 = '/:id';
 router.get(tmpv5, function(req, res) {
 var tmpv00 = req.params;
 var tmpv01 = tmpv00.id;
-var tmpv3 = "select * from donuts where id ="+tmpv01;
+var tmpv3 = "select * from donuts where id =" + tmpv01;
 knex.raw(tmpv3).then(function(donuts){
-  var tmpv4 = donuts;
-res.send(tmpv4);
+    var tmpv4 = donuts;
+    res.send(tmpv4);
   });
 });
-
 
 
 /**
@@ -68,6 +65,7 @@ res.send(tmpv16);
   });
 knex.raw("ROLLBACK");
 });
-**/
+
 module.exports = router;
 
+**/

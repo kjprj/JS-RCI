@@ -2,5 +2,19 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/subject_apps/Donuts" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/subject_apps/med-chem-rules" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/subject_apps/med-chem-rules/koa-hello-world" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/subjects/subject_apps/donut-shop" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/subjects/subject_apps/donut_shop" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/subjects/subject_apps/donuts" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/subjects/subject_apps/hello-world-node-express" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/subjects/subject_apps/koa-demos" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/subjects/subject_apps/koa-hello-world" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/subjects/subject_apps/med-chem-rules" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/subjects/subject_apps/med-chem-rules/koa-hello-world" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/subjects/subject_apps/node-postgresql" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/subjects/subject_apps/node-website" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/subjects/subject_apps/tmp/recipebook" vcs="Git" />
   </component>
 </project>

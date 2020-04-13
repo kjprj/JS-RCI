@@ -330,17 +330,14 @@ Module._extensions['.js'] = function (module, filename) {
                          }
 
                      }
-
                      // var text1 = calleename+"(\"start TRANSACTION\", function (arg1, arg2, arg3) {console.log(\"#$#$#$#start TRANSACTION\",arg1, arg2, arg3);})";
                      text1 = beforecallee + "(\"start TRANSACTION\", function (arg1, arg2, arg3) {console.log(\"#$#$#$#start TRANSACTION\");})";
                      // var text2 = calleename+"(\"ROLLBACK\", function (arg1, arg2, arg3) {console.log(\"#$#$#$#ROLLBACK\",arg1, arg2, arg3);})";
                      var text2 = beforecallee + "(\"ROLLBACK\", function (arg1, arg2, arg3) {console.log(\"#$#$#$#ROLLBACK\");})";
                   //   console.log(colors.blue(text1, "\n", text2));
-
                      if(args_.length >0) {
                          console.log(id, colors.blue("//SQL INVOCATION\n" + "if(" + args_.join(" || ") + "&& J$.toRollback){\n" + text1 + "\n       }\n\n" + foundCallee.orig + "//SQL ROOOOOOOOOOOOOLLBACK\nif(" + args_.join(" || ") + "&& J$.toRollback){\n" + text2 + "\n       }\n" + "\n    "));
-
-                        node.update("//SQL INVOCATION\n" + "if(" + args_.join(" || ") + "&& J$.toRollback){\n" + text1 + "\n       }\n\n" + node.source() + "//SQL ROOOOOOOOOOOOOLLBACK\nif(" + args_.join(" || ") + "&& J$.toRollback){\n" + text2 + "\n       }\n" + "\n    ");
+                         node.update("//SQL INVOCATION\n" + "if(" + args_.join(" || ") + "&& J$.toRollback){\n" + text1 + "\n       }\n\n" + node.source() + "//SQL ROOOOOOOOOOOOOLLBACK\nif(" + args_.join(" || ") + "&& J$.toRollback){\n" + text2 + "\n       }\n" + "\n    ");
                         //node.update("              if("+args_.join(" || ")+"){\n" +text2 +"\n       }\n"+"\n    "+node.source());
                         // node.update("\n    J$.methods.f"+node.expression.arguments[1].callee.arguments[0].value+"="+beforecallee+";\n    "+node.source());
                     }

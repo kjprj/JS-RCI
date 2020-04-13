@@ -83,16 +83,10 @@ for key in sorted(extract_globals.keys()):
 
 
 # print "extract_others", extract_others
-if value_sid_unmarshal!=9114157:
-    print colored("function "+uid+"(input){","yellow")
-    jscode +="function "+uid+"(input){"+"\n"
-    adaptedIn = adaptinput(code[unmarshal_stmt],"id")
-else:
-    print colored("function "+uid+"(){","yellow")
-    jscode +="function "+uid+"(){"+"\n"
-    adaptedIn = code[unmarshal_stmt];
-
-print colored("\t" +adaptedIn, 'blue')
+print colored("function "+uid+"(input){","yellow")
+jscode +="function "+uid+"(input){"+"\n"
+adaptedIn = adaptinput(code[unmarshal_stmt],"id")
+print colored(adaptedIn, 'blue')
 jscode +=adaptedIn+"\n"
 for key in sorted(extract_ftn.keys()):
     print colored("\t" + code[extract_ftn[key]], 'yellow')

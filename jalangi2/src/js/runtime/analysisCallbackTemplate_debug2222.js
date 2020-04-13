@@ -419,10 +419,10 @@ jalangiLabel1026:
                  estraverse.traverse(ast_program, {
                 enter: function (node, parent) {
                     node.parent = parent;
-                if (node.type =="BlockStatement" && node.range[0]>=pos && node.range[1]<=end && node.body && !J$.mashallingLog.entry){
+                if (node.type =="BlockStatement" && node.range[0]>=pos && node.range[1]<=end && node.body){
                     // var findingnode=parent;
 
-
+                        console.log("JSRCIStr111   ", escodegen.generate(node.body[0]));
                         // pos = ast_program1.body[0].body.body[0].range[0];
                         // end = ast_program1.body[0].body.body[0].range[1];
                         J$.mashallingLog.entry = {};
@@ -435,12 +435,35 @@ jalangiLabel1026:
                         J$.mashallingLog.entry.value_sid =polycrc.crc24("JSRCIStr");
                         J$.mashallingLog.entry.rwfacts = entryfact;
                         console.log(colors.magenta("Entry Point Identified"+"  WRITE(|JSRCIStr|)"+entryfact));
-                        console.log("JSRCIStr111   ", escodegen.generate(node.body[0]), J$.mashallingLog.entry.filnenamerange);
-
                 }
                 }});
 
+                 if(ast_program1.body[0] && ast_program1.body[0].body.body[0]){
+                 // if(ast_program1.body[0] && ){
+                     /**
+                        console.log("JSRCIStr111   ", escodegen.generate(ast_program1.body[0].body.body[0]));
+                        // pos = ast_program1.body[0].body.body[0].range[0];
+                        // end = ast_program1.body[0].body.body[0].range[1];
+                        J$.mashallingLog.entry = {};
+                        J$.mashallingLog.entry.filename =aaa[1].replace(process.cwd()+"/",'');
+                        J$.mashallingLog.entry.filnenamerange = aaa[1].replace(process.cwd()+"/",'')+":"+pos+":"+end;
+                        J$.mashallingLog.entry.range =[pos, end];
+                        J$.mashallingLog.entry.value = "JSRCIStr";
 
+
+                        entryfact= format("fp.fact(refs(BitVecVal(hashVar[\"{0}\"][\"bin\"],lineNum),BitVecVal({1},val)))",[J$.mashallingLog.entry.filename+":"+pos+":"+end,polycrc.crc24("JSRCIStr")]);
+                        J$.mashallingLog.entry.value_sid =polycrc.crc24("JSRCIStr");
+                        J$.mashallingLog.entry.rwfacts = entryfact;
+                        console.log(colors.magenta("Entry Point Identified"+"  WRITE(|JSRCIStr|)"+entryfact));
+**/
+
+                        // var ast = esprima.parse(code,{ loc: true, range: true });
+                        // var identifers = [];
+                        // var entryfact = "";
+
+
+
+                 }
 
             // parseObjectProperties(args[0], function(prop) {
             //   console.log("argggggg     ", prop);

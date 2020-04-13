@@ -1,9 +1,9 @@
 //JS-RCI generated
-var PROPERTIES = require('dVXRLg').data;
 function abcDe(input){
-	var id=input;
-	var tmpv10 = id - 1;
-	var tmpv2 = PROPERTIES[tmpv10];
-	var output=tmpv2;
+	var tmpv01=input;
+	var tmpv3 = "select * from donuts where id ="+tmpv01;
+	var donuts=alasql(tmpv3);
+	var tmpv4 = donuts;
+	var output=tmpv4;
 	return output;
 }

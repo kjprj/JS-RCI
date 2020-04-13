@@ -109,15 +109,14 @@ stmtdep     = Function('stmtdep',lineNum, lineNum, BoolSort()) #; stmt-dep (line
 calldep     = Function('calldep',var, var, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
 
 ref         = Function('ref',var, val, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
-ref2         = Function('ref2',var, prop, val, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
-refs         = Function('refs',lineNum, val, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
+ref2         = Function('ref',var, prop, val, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
 
 unMarshal   = Function('unMarshal',lineNum, var, val, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
 Marshal     = Function('Marshal',lineNum, var, val, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
 
 ExecutedStmts    = Function('ExecutedStmts',lineNum, uid, mval, val, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
 ExecutedUid    = Function('ExecutedUid',lineNum, uid, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
-ExecutedStmts0    = Function('ExecutedStmts0',lineNum, uid, mval, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
+
 ExecutedUMarshal    = Function('ExecutedUMarshal',lineNum, uid, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
 
 
@@ -135,13 +134,10 @@ fp.register_relation(stmtdep)
 fp.register_relation(calldep)
 fp.register_relation(ref)
 fp.register_relation(ref2)
-fp.register_relation(refs)
-
 fp.register_relation(unMarshal)
 fp.register_relation(Marshal)
 fp.register_relation(ExecutedStmts)
 fp.register_relation(ExecutedUid)
-fp.register_relation(ExecutedStmts0)
 o1 = Const('o1',obj)
 o2 = Const('o2',obj)
 o3 = Const('o3',obj)
@@ -210,23 +206,12 @@ fp.rule(Assign(v1,v2,line1),[Calls(o1,line1),Formal(v1,i1, o1),Actual(line1,i1, 
 
 fp.register_relation(Read1,Calls,Formal,Actual)
 fp.declare_var(v1,v2,line1,o1,i1,v2)
-#fp.rule(Read1(v2,line1),[Calls(o1,line1),Formal(v1,i1, o1),Actual(line1,i1, v2)])
-fp.rule(Read1(v2,line1),[Actual(line1,0, v1), Actual(line1,i1, v2)])
+fp.rule(Read1(v2,line1),[Calls(o1,line1),Formal(v1,i1, o1),Actual(line1,i1, v2)])
+
 
 fp.register_relation(Write1,Calls,Formal,Actual)
 fp.declare_var(v1,v2,line1,o1,i1,v2)
 fp.rule(Write1(v1,line1),[Calls(o1,line1),Formal(v1,i1, o1),Actual(line1,i1, v2)])
-
-
-fp.register_relation(Read1,Calls,Actual)
-fp.declare_var(v1,v2,line1,o1,i1,v2)
-fp.rule(Read1(v2,line1),[Calls(o1,line1),Actual(line1,i1, v2)])
-
-
-fp.register_relation(Write1,Calls,Actual)
-fp.declare_var(v1,v2,line1,o1,i1,v2)
-fp.rule(Write1(v1,line1),[Calls(o1,line1),Actual(line1,i1, v2)])
-
 
 fp.register_relation(Assign,Calls,MethodRet,CallRet)
 fp.declare_var(v1,v2,line1,o1,i1,v2)
@@ -253,9 +238,6 @@ fp.declare_var(line1,v1,val1)
 fp.rule(unMarshal(line1, v1, val1),[Write1(v1,line1),ref(v1, val1)])
 
 
-fp.register_relation(unMarshal,refs)
-fp.declare_var(line1,v1,val1)
-fp.rule(unMarshal(line1, 0, val1),refs(line1, val1))
 
 
 # fp.query(datadep(BitVecVal(1, lineNum),exitLine))
@@ -285,11 +267,6 @@ fp.rule(ExecutedStmts(line1, uid1, val1, val2),
              datadep(line1,line2), Marshal(line2, v1, val2),
              Not(datadep(line1,line3)), unMarshal(line3, v2, val1)
         ])
-
-fp.register_relation(ExecutedStmts0,datadep, Marshal)
-fp.declare_var(line1,line2, v1,val1,uid1)
-fp.rule(ExecutedStmts0(line1, uid1, val1), (datadep(line1,line2), Marshal(line2, v1, val1)))
-
 
 # fp.rule(Executed(line1, uid1, val1, val2),
 #         [
@@ -395,4 +372,3 @@ oline={};
 globals={};
 lines={};
 ranges={};
-sqlstmts=[];

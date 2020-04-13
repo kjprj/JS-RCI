@@ -6,9 +6,9 @@ var cors = require('cors');
 var logger = require('morgan');
 var knex = require('./db/knex');
 
-var shops = require('./routes/shopsRoutes');
+//var shops = require('./routes/shopsRoutes');
 var donuts = require('./routes/donutsRoutes');
-var employee = require('./routes/employeeRoutes');
+//var employee = require('./routes/employeeRoutes');
 
 var app = express();
 
@@ -20,9 +20,9 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use('/shops', shops);
+//app.use('/shops', shops);
 app.use('/donuts',donuts);
-app.use('/employee',employee);
+//app.use('/employee',employee);
 
 app.get('/', function(req, res){ res.redirect('/shops')});
 

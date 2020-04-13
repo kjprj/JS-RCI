@@ -109,15 +109,14 @@ stmtdep     = Function('stmtdep',lineNum, lineNum, BoolSort()) #; stmt-dep (line
 calldep     = Function('calldep',var, var, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
 
 ref         = Function('ref',var, val, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
-ref2         = Function('ref2',var, prop, val, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
-refs         = Function('refs',lineNum, val, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
+ref2         = Function('ref',var, prop, val, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
 
 unMarshal   = Function('unMarshal',lineNum, var, val, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
 Marshal     = Function('Marshal',lineNum, var, val, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
 
 ExecutedStmts    = Function('ExecutedStmts',lineNum, uid, mval, val, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
 ExecutedUid    = Function('ExecutedUid',lineNum, uid, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
-ExecutedStmts0    = Function('ExecutedStmts0',lineNum, uid, mval, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
+
 ExecutedUMarshal    = Function('ExecutedUMarshal',lineNum, uid, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
 
 
@@ -135,13 +134,10 @@ fp.register_relation(stmtdep)
 fp.register_relation(calldep)
 fp.register_relation(ref)
 fp.register_relation(ref2)
-fp.register_relation(refs)
-
 fp.register_relation(unMarshal)
 fp.register_relation(Marshal)
 fp.register_relation(ExecutedStmts)
 fp.register_relation(ExecutedUid)
-fp.register_relation(ExecutedStmts0)
 o1 = Const('o1',obj)
 o2 = Const('o2',obj)
 o3 = Const('o3',obj)
@@ -253,9 +249,6 @@ fp.declare_var(line1,v1,val1)
 fp.rule(unMarshal(line1, v1, val1),[Write1(v1,line1),ref(v1, val1)])
 
 
-fp.register_relation(unMarshal,refs)
-fp.declare_var(line1,v1,val1)
-fp.rule(unMarshal(line1, 0, val1),refs(line1, val1))
 
 
 # fp.query(datadep(BitVecVal(1, lineNum),exitLine))
@@ -285,11 +278,6 @@ fp.rule(ExecutedStmts(line1, uid1, val1, val2),
              datadep(line1,line2), Marshal(line2, v1, val2),
              Not(datadep(line1,line3)), unMarshal(line3, v2, val1)
         ])
-
-fp.register_relation(ExecutedStmts0,datadep, Marshal)
-fp.declare_var(line1,line2, v1,val1,uid1)
-fp.rule(ExecutedStmts0(line1, uid1, val1), (datadep(line1,line2), Marshal(line2, v1, val1)))
-
 
 # fp.rule(Executed(line1, uid1, val1, val2),
 #         [
@@ -395,105 +383,59 @@ oline={};
 globals={};
 lines={};
 ranges={};
-sqlstmts=[];
 
-#VariableDecl: var express = require('express');
-code[1000]="var express = require('express');"
+#VariableDecl: var knex = require('../db/knex');
+code[1000]="var knex = require('../db/knex');"
 fp.fact(Write1(BitVecVal(1001,var),BitVecVal(1000,lineNum)))
 fp.fact(Write1(BitVecVal(1001,var),BitVecVal(1000,lineNum)))
 fp.fact(Heap(BitVecVal(1002,var),BitVecVal(1004,obj)))
 fp.fact(Assign(BitVecVal(1001,var),BitVecVal(1005,obj),BitVecVal(1000,lineNum)))
-#VariableDecl: var router = express.Router();
-code[1006]="var router = express.Router();"
-fp.fact(Write1(BitVecVal(1007,var),BitVecVal(1006,lineNum)))
-fp.fact(Actual(BitVecVal(1006,lineNum), BitVecVal(0,num), BitVecVal(1001,var)))
-fp.fact(CallRet(BitVecVal(1006,lineNum), BitVecVal(1007,var)))
-#VariableDecl: var knex = require('../db/knex');
-code[1008]="var knex = require('../db/knex');"
-fp.fact(Write1(BitVecVal(1009,var),BitVecVal(1008,lineNum)))
-fp.fact(Write1(BitVecVal(1009,var),BitVecVal(1008,lineNum)))
-fp.fact(Heap(BitVecVal(1010,var),BitVecVal(1012,obj)))
-fp.fact(Assign(BitVecVal(1009,var),BitVecVal(1013,obj),BitVecVal(1008,lineNum)))
-#VariableDecl: var tmpv2 = '/';
-code[1014]="var tmpv2 = '/';"
-fp.fact(Write1(BitVecVal(1015,var),BitVecVal(1014,lineNum)))
-fp.fact(Heap(BitVecVal(1016,var),BitVecVal(1018,obj)))
-fp.fact(Assign(BitVecVal(1015,var),BitVecVal(1019,obj),BitVecVal(1014,lineNum)))
-#CallExpression: router.get(tmpv2, function(req, res) {\nvar tmpv0 = \"select * from donuts\";\nknex.raw(tmpv0).then(function(donuts){\n  var tmpv1 = donuts;\nres.send(tmpv1);\n  });\n});
-code[1020]="router.get(tmpv2, function(req, res) {\nvar tmpv0 = \"select * from donuts\";\nknex.raw(tmpv0).then(function(donuts){\n  var tmpv1 = donuts;\nres.send(tmpv1);\n  });\n});"
-fp.fact(Actual(BitVecVal(1020,lineNum), BitVecVal(0,num), BitVecVal(1007,var)))
-fp.fact(Heap(BitVecVal(1015,var),BitVecVal(1024,obj)))
-fp.fact(Actual(BitVecVal(1020,lineNum), BitVecVal(1,num), BitVecVal(1015,var)))
-#VariableDecl: var tmpv0 = \"select * from donuts\";
-code[1025]="var tmpv0 = \"select * from donuts\";"
-fp.fact(Write1(BitVecVal(1026,var),BitVecVal(1025,lineNum)))
-fp.fact(Heap(BitVecVal(1027,var),BitVecVal(1029,obj)))
-fp.fact(Assign(BitVecVal(1026,var),BitVecVal(1030,obj),BitVecVal(1025,lineNum)))
-#CallExpression: knex.raw(tmpv0).then(function(donuts){\n  var tmpv1 = donuts;\nres.send(tmpv1);\n  });
-code[1031]="knex.raw(tmpv0).then(function(donuts){\n  var tmpv1 = donuts;\nres.send(tmpv1);\n  });"
-fp.fact(Actual(BitVecVal(1031,lineNum), BitVecVal(0,num), BitVecVal(1009,var)))
-fp.fact(Heap(BitVecVal(1026,var),BitVecVal(1035,obj)))
-fp.fact(Actual(BitVecVal(1031,lineNum), BitVecVal(1,num), BitVecVal(1026,var)))
-#VariableDecl: var tmpv1 = donuts;
-code[1036]="var tmpv1 = donuts;"
-fp.fact(Write1(BitVecVal(1037,var),BitVecVal(1036,lineNum)))
-fp.fact(Read1(BitVecVal(1038,var),BitVecVal(1036,lineNum)))
-fp.fact(Assign(BitVecVal(1037,var),BitVecVal(1038,obj),BitVecVal(1036,lineNum)))
-#CallExpression: res.send(tmpv1);
-code[1039]="res.send(tmpv1);"
-fp.fact(Actual(BitVecVal(1039,lineNum), BitVecVal(0,num), BitVecVal(1040,var)))
-fp.fact(Heap(BitVecVal(1037,var),BitVecVal(1044,obj)))
-fp.fact(Actual(BitVecVal(1039,lineNum), BitVecVal(1,num), BitVecVal(1037,var)))
 #VariableDecl: var tmpv5 = '/:id';
-code[1045]="var tmpv5 = '/:id';"
-fp.fact(Write1(BitVecVal(1046,var),BitVecVal(1045,lineNum)))
-fp.fact(Heap(BitVecVal(1047,var),BitVecVal(1049,obj)))
-fp.fact(Assign(BitVecVal(1046,var),BitVecVal(1050,obj),BitVecVal(1045,lineNum)))
-#CallExpression: router.get(tmpv5, function(req, res) {\nvar tmpv00 = req.params;\nvar tmpv01 = tmpv00.id;\nvar tmpv3 = \"select * from donuts where id =\"+tmpv01;\nknex.raw(tmpv3).then(function(donuts){\n  var tmpv4 = donuts;\nres.send(tmpv4);\n  });\n});
-code[1051]="router.get(tmpv5, function(req, res) {\nvar tmpv00 = req.params;\nvar tmpv01 = tmpv00.id;\nvar tmpv3 = \"select * from donuts where id =\"+tmpv01;\nknex.raw(tmpv3).then(function(donuts){\n  var tmpv4 = donuts;\nres.send(tmpv4);\n  });\n});"
-fp.fact(Actual(BitVecVal(1051,lineNum), BitVecVal(0,num), BitVecVal(1007,var)))
-fp.fact(Heap(BitVecVal(1046,var),BitVecVal(1055,obj)))
-fp.fact(Actual(BitVecVal(1051,lineNum), BitVecVal(1,num), BitVecVal(1046,var)))
+code[1006]="var tmpv5 = '/:id';"
+fp.fact(Write1(BitVecVal(1007,var),BitVecVal(1006,lineNum)))
+fp.fact(Heap(BitVecVal(1008,var),BitVecVal(1010,obj)))
+fp.fact(Assign(BitVecVal(1007,var),BitVecVal(1011,obj),BitVecVal(1006,lineNum)))
+#CallExpression: router.get(tmpv5, function(req, res) {\nvar tmpv00 = req.params;\nvar tmpv01 = tmpv00.id;\nvar tmpv3 = \"select * from donuts where id =\" + tmpv01;\nknex.raw(tmpv3).then(function(donuts){\n    var tmpv4 = donuts;\n    res.send(tmpv4);\n  });\n});
+code[1012]="router.get(tmpv5, function(req, res) {\nvar tmpv00 = req.params;\nvar tmpv01 = tmpv00.id;\nvar tmpv3 = \"select * from donuts where id =\" + tmpv01;\nknex.raw(tmpv3).then(function(donuts){\n    var tmpv4 = donuts;\n    res.send(tmpv4);\n  });\n});"
+fp.fact(Actual(BitVecVal(1012,lineNum), BitVecVal(0,num), BitVecVal(1013,var)))
+fp.fact(Heap(BitVecVal(1007,var),BitVecVal(1017,obj)))
+fp.fact(Actual(BitVecVal(1012,lineNum), BitVecVal(1,num), BitVecVal(1007,var)))
 #VariableDecl: var tmpv00 = req.params;
-code[1056]="var tmpv00 = req.params;"
-fp.fact(Write1(BitVecVal(1057,var),BitVecVal(1056,lineNum)))
-fp.fact(Read2(BitVecVal(1058,var), BitVecVal(1060,prop), BitVecVal(1056,lineNum)))
-fp.fact(Load(BitVecVal(1057,var),BitVecVal(1058,var), BitVecVal(1059,prop),BitVecVal(1056,lineNum)))
+code[1018]="var tmpv00 = req.params;"
+fp.fact(Write1(BitVecVal(1019,var),BitVecVal(1018,lineNum)))
+fp.fact(Read2(BitVecVal(1020,var), BitVecVal(1022,prop), BitVecVal(1018,lineNum)))
+fp.fact(Load(BitVecVal(1019,var),BitVecVal(1020,var), BitVecVal(1021,prop),BitVecVal(1018,lineNum)))
 #VariableDecl: var tmpv01 = tmpv00.id;
-code[1061]="var tmpv01 = tmpv00.id;"
-fp.fact(Write1(BitVecVal(1062,var),BitVecVal(1061,lineNum)))
-fp.fact(Read2(BitVecVal(1057,var), BitVecVal(1064,prop), BitVecVal(1061,lineNum)))
-fp.fact(Load(BitVecVal(1062,var),BitVecVal(1057,var), BitVecVal(1063,prop),BitVecVal(1061,lineNum)))
-#VariableDecl: var tmpv3 = \"select * from donuts where id =\"+tmpv01;
-code[1065]="var tmpv3 = \"select * from donuts where id =\"+tmpv01;"
-fp.fact(Write1(BitVecVal(1066,var),BitVecVal(1065,lineNum)))
-fp.fact(Write1(BitVecVal(1066,var),BitVecVal(1065,lineNum)))
-fp.fact(Heap(BitVecVal(1067,var),BitVecVal(1069,obj)))
-fp.fact(Assign(BitVecVal(1066,var),BitVecVal(1070,obj),BitVecVal(1065,lineNum)))
-fp.fact(Write1(BitVecVal(1066,var),BitVecVal(1065,lineNum)))
-fp.fact(Read1(BitVecVal(1062,var),BitVecVal(1065,lineNum)))
-fp.fact(Assign(BitVecVal(1066,var),BitVecVal(1062,obj),BitVecVal(1065,lineNum)))
-#CallExpression: knex.raw(tmpv3).then(function(donuts){\n  var tmpv4 = donuts;\nres.send(tmpv4);\n  });
-code[1071]="knex.raw(tmpv3).then(function(donuts){\n  var tmpv4 = donuts;\nres.send(tmpv4);\n  });"
-#transform sqlsubject_apps/Donuts/routes/donutsRoutes.js:474:557
-fp.fact(Actual(BitVecVal(1071,lineNum), BitVecVal(0,num), BitVecVal(100900,var)))
-fp.fact(Heap(BitVecVal(1066,var),BitVecVal(1075,obj)))
-fp.fact(Actual(BitVecVal(1071,lineNum), BitVecVal(1,num), BitVecVal(1066,var)))
+code[1023]="var tmpv01 = tmpv00.id;"
+fp.fact(Write1(BitVecVal(1024,var),BitVecVal(1023,lineNum)))
+fp.fact(Read2(BitVecVal(1019,var), BitVecVal(1026,prop), BitVecVal(1023,lineNum)))
+fp.fact(Load(BitVecVal(1024,var),BitVecVal(1019,var), BitVecVal(1025,prop),BitVecVal(1023,lineNum)))
+#VariableDecl: var tmpv3 = \"select * from donuts where id =\" + tmpv01;
+code[1027]="var tmpv3 = \"select * from donuts where id =\" + tmpv01;"
+fp.fact(Write1(BitVecVal(1028,var),BitVecVal(1027,lineNum)))
+fp.fact(Write1(BitVecVal(1028,var),BitVecVal(1027,lineNum)))
+fp.fact(Heap(BitVecVal(1029,var),BitVecVal(1031,obj)))
+fp.fact(Assign(BitVecVal(1028,var),BitVecVal(1032,obj),BitVecVal(1027,lineNum)))
+fp.fact(Write1(BitVecVal(1028,var),BitVecVal(1027,lineNum)))
+fp.fact(Read1(BitVecVal(1033,var),BitVecVal(1027,lineNum)))
+fp.fact(Assign(BitVecVal(1028,var),BitVecVal(1024,obj),BitVecVal(1027,lineNum)))
+#CallExpression: knex.raw(tmpv3).then(function(donuts){\n    var tmpv4 = donuts;\n    res.send(tmpv4);\n  });
+code[1033]="knex.raw(tmpv3).then(function(donuts){\n    var tmpv4 = donuts;\n    res.send(tmpv4);\n  });"
+#transform sql
+fp.fact(Actual(BitVecVal(1033,lineNum), BitVecVal(0,num), BitVecVal(100100,var)))
+code[1033]="var donuts = alasql(tmpppp);"
+fp.fact(Heap(BitVecVal(1028,var),BitVecVal(1037,obj)))
+fp.fact(Actual(BitVecVal(1033,lineNum), BitVecVal(1,num), BitVecVal(1028,var)))
 #VariableDecl: var tmpv4 = donuts;
-code[1076]="var tmpv4 = donuts;"
-fp.fact(Write1(BitVecVal(1077,var),BitVecVal(1076,lineNum)))
-fp.fact(Read1(BitVecVal(1078,var),BitVecVal(1076,lineNum)))
-fp.fact(Assign(BitVecVal(1077,var),BitVecVal(1078,obj),BitVecVal(1076,lineNum)))
+code[1038]="var tmpv4 = donuts;"
+fp.fact(Write1(BitVecVal(1039,var),BitVecVal(1038,lineNum)))
+fp.fact(Read1(BitVecVal(1040,var),BitVecVal(1038,lineNum)))
+fp.fact(Assign(BitVecVal(1039,var),BitVecVal(1040,obj),BitVecVal(1038,lineNum)))
 #CallExpression: res.send(tmpv4);
-code[1079]="res.send(tmpv4);"
-fp.fact(Actual(BitVecVal(1079,lineNum), BitVecVal(0,num), BitVecVal(1080,var)))
-fp.fact(Heap(BitVecVal(1077,var),BitVecVal(1084,obj)))
-fp.fact(Actual(BitVecVal(1079,lineNum), BitVecVal(1,num), BitVecVal(1077,var)))
-#Assignment: module.exports = router;"
-code[1085]="module.exports = router;"
-fp.fact(Write2(BitVecVal(1086,obj),BitVecVal(1087,var), BitVecVal(1085,lineNum)))
-fp.fact(Read1(BitVecVal(1007,var),BitVecVal(1085,lineNum)))
-fp.fact(Store(BitVecVal(3567,var),BitVecVal(3567,var), BitVecVal(1007,prop), BitVecVal(1085,lineNum)))
+code[1041]="res.send(tmpv4);"
+fp.fact(Actual(BitVecVal(1041,lineNum), BitVecVal(0,num), BitVecVal(1042,var)))
+fp.fact(Heap(BitVecVal(1039,var),BitVecVal(1046,obj)))
+fp.fact(Actual(BitVecVal(1041,lineNum), BitVecVal(1,num), BitVecVal(1039,var)))
 
 
 
@@ -501,95 +443,66 @@ fp.fact(Store(BitVecVal(3567,var),BitVecVal(3567,var), BitVecVal(1007,prop), Bit
 
 
 
+fp.fact(controldep(BitVecVal(1018,lineNum),BitVecVal(1023,lineNum)))
+
+fp.fact(controldep(BitVecVal(1023,lineNum),BitVecVal(1027,lineNum)))
+
+fp.fact(controldep(BitVecVal(1027,lineNum),BitVecVal(1033,lineNum)))
+
+fp.fact(controldep(BitVecVal(1033,lineNum),BitVecVal(1038,lineNum)))
+
+fp.fact(controldep(BitVecVal(1038,lineNum),BitVecVal(1041,lineNum)))
+
+hashVar["donutsRoutes.js:299:332"]={"bin":1000, "name":"var knex = require('../db/knex');"};
+hashVar["donutsRoutes.js:303:307"]={"bin":1001, "name":"knex"};
+hashVar["donutsRoutes.js:572:591"]={"bin":1006, "name":"var tmpv5 = '/:id';"};
+hashVar["donutsRoutes.js:576:581"]={"bin":1007, "name":"tmpv5"};
+hashVar["donutsRoutes.js:592:829"]={"bin":1012, "name":"router.get(tmpv5, function(req, res) {\nvar tmpv00 = req.params;\nvar tmpv01 = tmpv00.id;\nvar tmpv3 = \"select * from donuts where id =\" + tmpv01;\nknex.raw(tmpv3).then(function(donuts){\n    var tmpv4 = donuts;\n    res.send(tmpv4);\n  });\n});"};
+hashVar["donutsRoutes.js:592:598"]={"bin":1013, "name":"router"};
+hashVar["donutsRoutes.js:603:608"]={"bin":1007, "name":"tmpv5"};
+hashVar["2tempHash"]={"bin":1017, "name":"2tempHash"};
+hashVar["donutsRoutes.js:631:655"]={"bin":1018, "name":"var tmpv00 = req.params;"};
+hashVar["donutsRoutes.js:635:641"]={"bin":1019, "name":"tmpv00"};
+hashVar["donutsRoutes.js:644:647"]={"bin":1020, "name":"req"};
+hashVar["donutsRoutes.js:644:654"]={"bin":1021, "name":"req.params"};
+hashVar["donutsRoutes.js:648:654"]={"bin":1022, "name":"params"};
+hashVar["donutsRoutes.js:656:679"]={"bin":1023, "name":"var tmpv01 = tmpv00.id;"};
+hashVar["donutsRoutes.js:660:666"]={"bin":1024, "name":"tmpv01"};
+hashVar["donutsRoutes.js:669:675"]={"bin":1019, "name":"tmpv00"};
+hashVar["donutsRoutes.js:669:678"]={"bin":1025, "name":"tmpv00.id"};
+hashVar["donutsRoutes.js:676:678"]={"bin":1026, "name":"id"};
+hashVar["donutsRoutes.js:680:735"]={"bin":1027, "name":"var tmpv3 = \"select * from donuts where id =\" + tmpv01;"};
+hashVar["donutsRoutes.js:684:689"]={"bin":1028, "name":"tmpv3"};
+hashVar["donutsRoutes.js:728:734"]={"bin":1024, "name":"tmpv01"};
+hashVar["donutsRoutes.js:736:825"]={"bin":1033, "name":"knex.raw(tmpv3).then(function(donuts){\n    var tmpv4 = donuts;\n    res.send(tmpv4);\n  });"};
+hashVar["donutsRoutes.js:736:740"]={"bin":1001, "name":"knex"};
+hashVar["donutsRoutes.js:745:750"]={"bin":1028, "name":"tmpv3"};
+hashVar["4tempHash"]={"bin":1037, "name":"4tempHash"};
+hashVar["donutsRoutes.js:779:798"]={"bin":1038, "name":"var tmpv4 = donuts;"};
+hashVar["donutsRoutes.js:783:788"]={"bin":1039, "name":"tmpv4"};
+hashVar["donutsRoutes.js:791:797"]={"bin":1040, "name":"donuts"};
+hashVar["donutsRoutes.js:803:819"]={"bin":1041, "name":"res.send(tmpv4);"};
+hashVar["donutsRoutes.js:803:806"]={"bin":1042, "name":"res"};
+hashVar["donutsRoutes.js:812:817"]={"bin":1039, "name":"tmpv4"};
+hashVar["5tempHash"]={"bin":1046, "name":"5tempHash"};
 
 
-fp.fact(controldep(BitVecVal(1025,lineNum),BitVecVal(1031,lineNum)))
-
-fp.fact(controldep(BitVecVal(1031,lineNum),BitVecVal(1036,lineNum)))
-
-fp.fact(controldep(BitVecVal(1036,lineNum),BitVecVal(1039,lineNum)))
+fp.query(PtsTo)
+v_ex = fp.get_answer()
+print colored( "PtsTo***********",'blue'), v_ex
 
 
+fp.query(Actual)
+v_ex = fp.get_answer()
+print colored( "Actual***********",'red'), v_ex
 
+fp.query(Calls)
+v_ex = fp.get_answer()
+print colored( "Calls***********",'green'), v_ex
 
-fp.fact(controldep(BitVecVal(1056,lineNum),BitVecVal(1061,lineNum)))
-
-fp.fact(controldep(BitVecVal(1061,lineNum),BitVecVal(1065,lineNum)))
-
-fp.fact(controldep(BitVecVal(1065,lineNum),BitVecVal(1071,lineNum)))
-
-fp.fact(controldep(BitVecVal(1071,lineNum),BitVecVal(1076,lineNum)))
-
-fp.fact(controldep(BitVecVal(1076,lineNum),BitVecVal(1079,lineNum)))
-
-
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:9:42"]={"bin":1000, "name":"var express = require('express');"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:13:20"]={"bin":1001, "name":"express"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:43:73"]={"bin":1006, "name":"var router = express.Router();"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:47:53"]={"bin":1007, "name":"router"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:56:63"]={"bin":1001, "name":"express"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:74:107"]={"bin":1008, "name":"var knex = require('../db/knex');"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:78:82"]={"bin":1009, "name":"knex"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:131:147"]={"bin":1014, "name":"var tmpv2 = '/';"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:135:140"]={"bin":1015, "name":"tmpv2"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:148:310"]={"bin":1020, "name":"router.get(tmpv2, function(req, res) {\nvar tmpv0 = \"select * from donuts\";\nknex.raw(tmpv0).then(function(donuts){\n  var tmpv1 = donuts;\nres.send(tmpv1);\n  });\n});"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:148:154"]={"bin":1007, "name":"router"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:159:164"]={"bin":1015, "name":"tmpv2"};
-hashVar["3tempHash"]={"bin":1024, "name":"3tempHash"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:187:222"]={"bin":1025, "name":"var tmpv0 = \"select * from donuts\";"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:191:196"]={"bin":1026, "name":"tmpv0"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:223:306"]={"bin":1031, "name":"knex.raw(tmpv0).then(function(donuts){\n  var tmpv1 = donuts;\nres.send(tmpv1);\n  });"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:223:227"]={"bin":1009, "name":"knex"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:232:237"]={"bin":1026, "name":"tmpv0"};
-hashVar["5tempHash"]={"bin":1035, "name":"5tempHash"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:264:283"]={"bin":1036, "name":"var tmpv1 = donuts;"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:268:273"]={"bin":1037, "name":"tmpv1"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:276:282"]={"bin":1038, "name":"donuts"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:284:300"]={"bin":1039, "name":"res.send(tmpv1);"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:284:287"]={"bin":1040, "name":"res"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:293:298"]={"bin":1037, "name":"tmpv1"};
-hashVar["6tempHash"]={"bin":1044, "name":"6tempHash"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:312:331"]={"bin":1045, "name":"var tmpv5 = '/:id';"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:316:321"]={"bin":1046, "name":"tmpv5"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:332:561"]={"bin":1051, "name":"router.get(tmpv5, function(req, res) {\nvar tmpv00 = req.params;\nvar tmpv01 = tmpv00.id;\nvar tmpv3 = \"select * from donuts where id =\"+tmpv01;\nknex.raw(tmpv3).then(function(donuts){\n  var tmpv4 = donuts;\nres.send(tmpv4);\n  });\n});"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:332:338"]={"bin":1007, "name":"router"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:343:348"]={"bin":1046, "name":"tmpv5"};
-hashVar["8tempHash"]={"bin":1055, "name":"8tempHash"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:371:395"]={"bin":1056, "name":"var tmpv00 = req.params;"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:375:381"]={"bin":1057, "name":"tmpv00"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:384:387"]={"bin":1058, "name":"req"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:384:394"]={"bin":1059, "name":"req.params"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:388:394"]={"bin":1060, "name":"params"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:396:419"]={"bin":1061, "name":"var tmpv01 = tmpv00.id;"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:400:406"]={"bin":1062, "name":"tmpv01"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:409:415"]={"bin":1057, "name":"tmpv00"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:409:418"]={"bin":1063, "name":"tmpv00.id"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:416:418"]={"bin":1064, "name":"id"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:420:473"]={"bin":1065, "name":"var tmpv3 = \"select * from donuts where id =\"+tmpv01;"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:424:429"]={"bin":1066, "name":"tmpv3"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:466:472"]={"bin":1062, "name":"tmpv01"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:474:557"]={"bin":1071, "name":"knex.raw(tmpv3).then(function(donuts){\n  var tmpv4 = donuts;\nres.send(tmpv4);\n  });"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:474:478"]={"bin":1009, "name":"knex"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:483:488"]={"bin":1066, "name":"tmpv3"};
-hashVar["10tempHash"]={"bin":1075, "name":"10tempHash"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:515:534"]={"bin":1076, "name":"var tmpv4 = donuts;"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:519:524"]={"bin":1077, "name":"tmpv4"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:527:533"]={"bin":1078, "name":"donuts"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:535:551"]={"bin":1079, "name":"res.send(tmpv4);"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:535:538"]={"bin":1080, "name":"res"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:544:549"]={"bin":1077, "name":"tmpv4"};
-hashVar["11tempHash"]={"bin":1084, "name":"11tempHash"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:1656:1680"]={"bin":1085, "name":"module.exports = router;"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:1656:1662"]={"bin":1086, "name":"module"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:1663:1670"]={"bin":1087, "name":"exports"};
-hashVar["subject_apps/Donuts/routes/donutsRoutes.js:1673:1679"]={"bin":1007, "name":"router"};
-boundToExtractFunction = 1087;
-fp.fact(ref(BitVecVal(hashVar["subject_apps/Donuts/routes/donutsRoutes.js:400:406"]["bin"],var),BitVecVal(3062344,val)))
-fp.fact(ref(BitVecVal(hashVar["subject_apps/Donuts/routes/donutsRoutes.js:519:524"]["bin"],var),BitVecVal(6173668,val)))
-#sql adapted
-code[hashVar["subject_apps/Donuts/routes/donutsRoutes.js:474:557"]["bin"]]="var donuts=alasql(tmpv3);"
-#sql statements
-value_sid_unmarshal=3062344
+boundToExtractFunction = 1041;
+fp.fact(ref(BitVecVal(1024,var),BitVecVal(3062344,val)))
+fp.fact(ref(BitVecVal(1039,var),BitVecVal(2348502,val)))
 
 exitLine = Const('exit', lineNum)
 fp.declare_var(exitLine)
@@ -602,7 +515,7 @@ print colored("*********** Constraint Solving Started::::",'magenta')
 print colored( "unMarshal***********",'blue'), unmarshal_stmt, unmarshal_stmt_start
 #
 #
-fp.query(Marshal(line2, v1, 6173668))
+fp.query(Marshal(line2, v1, 2348502))
 v_ex = fp.get_answer()
 # print "Marshal***********  ", colored(v_ex,'blue'), v_ex
 
@@ -631,12 +544,7 @@ v_ex = fp.get_answer()
 # v_ex = fp.get_answer()
 # print "######################LoadOrAssignVar", v_ex
 
-if marshal_stmt != unmarshal_stmt:
-    fp.query(ExecutedStmts(exitLine, 12313, 3062344, 6173668))
-else:
-    fp.query(ExecutedStmts0(exitLine, 3062344, 6173668))
-
-# fp.query(ExecutedStmts(exitLine, 12313, 3062344, 6173668))
+fp.query(ExecutedStmts(exitLine, 12313, 3062344, 2348502))
 v_ex = fp.get_answer()
 print colored("ExecutedStmts***********  ",'blue')
 print v_ex
@@ -676,16 +584,10 @@ for key in sorted(extract_globals.keys()):
 
 
 # print "extract_others", extract_others
-if value_sid_unmarshal!=9114157:
-    print colored("function "+uid+"(input){","yellow")
-    jscode +="function "+uid+"(input){"+"\n"
-    adaptedIn = adaptinput(code[unmarshal_stmt],"id")
-else:
-    print colored("function "+uid+"(){","yellow")
-    jscode +="function "+uid+"(){"+"\n"
-    adaptedIn = code[unmarshal_stmt];
-
-print colored("\t" +adaptedIn, 'blue')
+print colored("function "+uid+"(input){","yellow")
+jscode +="function "+uid+"(input){"+"\n"
+adaptedIn = adaptinput(code[unmarshal_stmt],"id")
+print colored(adaptedIn, 'blue')
 jscode +=adaptedIn+"\n"
 for key in sorted(extract_ftn.keys()):
     print colored("\t" + code[extract_ftn[key]], 'yellow')
@@ -716,8 +618,6 @@ for key in extract_others:
     f.write(txt)
     print colored("//depenent statements in File "+key+"\n"+txt, 'cyan')
 
-for sql in sqlstmts:
-    print colored("//sql stmts "+ "\n" + sql , 'cyan')
 
 print colored("Extracting Functions DONE!***********  \n See generated JS files in results folder, abcDe.js is entry",'magenta')
 

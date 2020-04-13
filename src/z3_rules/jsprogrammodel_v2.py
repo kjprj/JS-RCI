@@ -117,7 +117,7 @@ Marshal     = Function('Marshal',lineNum, var, val, BoolSort()) #; call-dep (var
 
 ExecutedStmts    = Function('ExecutedStmts',lineNum, uid, mval, val, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
 ExecutedUid    = Function('ExecutedUid',lineNum, uid, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
-ExecutedStmts0    = Function('ExecutedStmts0',lineNum, uid, mval, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
+
 ExecutedUMarshal    = Function('ExecutedUMarshal',lineNum, uid, BoolSort()) #; call-dep (variable variable) #(declare-rel call-dep (var var))
 
 
@@ -141,7 +141,6 @@ fp.register_relation(unMarshal)
 fp.register_relation(Marshal)
 fp.register_relation(ExecutedStmts)
 fp.register_relation(ExecutedUid)
-fp.register_relation(ExecutedStmts0)
 o1 = Const('o1',obj)
 o2 = Const('o2',obj)
 o3 = Const('o3',obj)
@@ -285,11 +284,6 @@ fp.rule(ExecutedStmts(line1, uid1, val1, val2),
              datadep(line1,line2), Marshal(line2, v1, val2),
              Not(datadep(line1,line3)), unMarshal(line3, v2, val1)
         ])
-
-fp.register_relation(ExecutedStmts0,datadep, Marshal)
-fp.declare_var(line1,line2, v1,val1,uid1)
-fp.rule(ExecutedStmts0(line1, uid1, val1), (datadep(line1,line2), Marshal(line2, v1, val1)))
-
 
 # fp.rule(Executed(line1, uid1, val1, val2),
 #         [

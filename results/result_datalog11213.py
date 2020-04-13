@@ -431,7 +431,8 @@ fp.fact(Heap(BitVecVal(1027,var),BitVecVal(1029,obj)))
 fp.fact(Assign(BitVecVal(1026,var),BitVecVal(1030,obj),BitVecVal(1025,lineNum)))
 #CallExpression: knex.raw(tmpv0).then(function(donuts){\n  var tmpv1 = donuts;\nres.send(tmpv1);\n  });
 code[1031]="knex.raw(tmpv0).then(function(donuts){\n  var tmpv1 = donuts;\nres.send(tmpv1);\n  });"
-fp.fact(Actual(BitVecVal(1031,lineNum), BitVecVal(0,num), BitVecVal(1009,var)))
+#transform sqlsubject_apps/Donuts/routes/donutsRoutes.js:223:306
+fp.fact(Actual(BitVecVal(1031,lineNum), BitVecVal(0,num), BitVecVal(100900,var)))
 fp.fact(Heap(BitVecVal(1026,var),BitVecVal(1035,obj)))
 fp.fact(Actual(BitVecVal(1031,lineNum), BitVecVal(1,num), BitVecVal(1026,var)))
 #VariableDecl: var tmpv1 = donuts;
@@ -475,8 +476,7 @@ fp.fact(Read1(BitVecVal(1062,var),BitVecVal(1065,lineNum)))
 fp.fact(Assign(BitVecVal(1066,var),BitVecVal(1062,obj),BitVecVal(1065,lineNum)))
 #CallExpression: knex.raw(tmpv3).then(function(donuts){\n  var tmpv4 = donuts;\nres.send(tmpv4);\n  });
 code[1071]="knex.raw(tmpv3).then(function(donuts){\n  var tmpv4 = donuts;\nres.send(tmpv4);\n  });"
-#transform sqlsubject_apps/Donuts/routes/donutsRoutes.js:474:557
-fp.fact(Actual(BitVecVal(1071,lineNum), BitVecVal(0,num), BitVecVal(100900,var)))
+fp.fact(Actual(BitVecVal(1071,lineNum), BitVecVal(0,num), BitVecVal(1009,var)))
 fp.fact(Heap(BitVecVal(1066,var),BitVecVal(1075,obj)))
 fp.fact(Actual(BitVecVal(1071,lineNum), BitVecVal(1,num), BitVecVal(1066,var)))
 #VariableDecl: var tmpv4 = donuts;
@@ -583,18 +583,18 @@ hashVar["subject_apps/Donuts/routes/donutsRoutes.js:1656:1680"]={"bin":1085, "na
 hashVar["subject_apps/Donuts/routes/donutsRoutes.js:1656:1662"]={"bin":1086, "name":"module"};
 hashVar["subject_apps/Donuts/routes/donutsRoutes.js:1663:1670"]={"bin":1087, "name":"exports"};
 hashVar["subject_apps/Donuts/routes/donutsRoutes.js:1673:1679"]={"bin":1007, "name":"router"};
-boundToExtractFunction = 1087;
-fp.fact(ref(BitVecVal(hashVar["subject_apps/Donuts/routes/donutsRoutes.js:400:406"]["bin"],var),BitVecVal(3062344,val)))
-fp.fact(ref(BitVecVal(hashVar["subject_apps/Donuts/routes/donutsRoutes.js:519:524"]["bin"],var),BitVecVal(6173668,val)))
+boundToExtractFunction = 1036;
+value_sid_marshal=9114157;
+fp.fact(refs(BitVecVal(hashVar["subject_apps/Donuts/routes/donutsRoutes.js:187:222"]["bin"],lineNum),BitVecVal(9114157,val)))
+fp.fact(ref(BitVecVal(hashVar["subject_apps/Donuts/routes/donutsRoutes.js:268:273"]["bin"],var),BitVecVal(4047092,val)))
 #sql adapted
-code[hashVar["subject_apps/Donuts/routes/donutsRoutes.js:474:557"]["bin"]]="var donuts=alasql(tmpv3);"
+code[hashVar["subject_apps/Donuts/routes/donutsRoutes.js:223:306"]["bin"]]="var donuts=alasql(tmpv0);"
 #sql statements
-value_sid_unmarshal=3062344
 
 exitLine = Const('exit', lineNum)
 fp.declare_var(exitLine)
 
-fp.query(unMarshal(line2, v1, 3062344))
+fp.query(unMarshal(line2, v1, 9114157))
 v_ex = fp.get_answer()
 unmarshal_stmt = v_ex.arg(1).arg(1).as_long()
 unmarshal_stmt_start = get_key(unmarshal_stmt).split(":")[1]
@@ -602,7 +602,7 @@ print colored("*********** Constraint Solving Started::::",'magenta')
 print colored( "unMarshal***********",'blue'), unmarshal_stmt, unmarshal_stmt_start
 #
 #
-fp.query(Marshal(line2, v1, 6173668))
+fp.query(Marshal(line2, v1, 4047092))
 v_ex = fp.get_answer()
 # print "Marshal***********  ", colored(v_ex,'blue'), v_ex
 
@@ -632,11 +632,11 @@ v_ex = fp.get_answer()
 # print "######################LoadOrAssignVar", v_ex
 
 if marshal_stmt != unmarshal_stmt:
-    fp.query(ExecutedStmts(exitLine, 12313, 3062344, 6173668))
+    fp.query(ExecutedStmts(exitLine, 12313, 9114157, 4047092))
 else:
-    fp.query(ExecutedStmts0(exitLine, 3062344, 6173668))
+    fp.query(ExecutedStmts0(exitLine, 9114157, 4047092))
 
-# fp.query(ExecutedStmts(exitLine, 12313, 3062344, 6173668))
+# fp.query(ExecutedStmts(exitLine, 12313, 9114157, 4047092))
 v_ex = fp.get_answer()
 print colored("ExecutedStmts***********  ",'blue')
 print v_ex
