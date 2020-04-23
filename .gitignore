@@ -5,7 +5,7 @@ todo.txt
 build/
 __tmp*
 .idea/workspace.xml
-
+tmp/
 # Logs
 logs
 *.log

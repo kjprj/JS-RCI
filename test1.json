@@ -53,6 +53,21 @@
     "client_params": 90001,
     "server_return":[{"id":1,"name":"Dillas Donuts","city":"Detroit"}]
   },
+  {
+    "id": "delete_donut",
+    "client_params": 90001,
+    "server_return":[{"id":2,"name":"Long John","topping":"Maple","price":3},{"id":3,"name":"Frosted","topping":"Strawberry","price":2}]
+  },
+  {
+    "id": "add_donut",
+    "client_params": {"name":"donut4","topping":"sugar","price":3},
+    "server_return":[{"id":1,"name":"Glazed","topping":null,"price":2},{"id":2,"name":"Long John","topping":"Maple","price":3},{"id":3,"name":"Frosted","topping":"Strawberry","price":2},{"id":6,"name":"donut4","topping":"sugar","price":3}]
+  },
+  {
+     "id": "update_donut",
+    "client_params": { "id": 2, "name": "Short John", "topping": "Sugar"},
+    "server_return":[{"id":1,"name":"Glazed","topping":null,"price":2},{"id":2,"name":"Short John","topping":"Sugar","price":3},{"id":3,"name":"Frosted","topping":"Strawberry","price":2}]
+  },
 
   {
     "id": "shopall",

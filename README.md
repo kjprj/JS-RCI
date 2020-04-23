@@ -28,7 +28,7 @@ sudo ./bin/goreplay --input-file records/record_example1_0.gor --output-http="ht
   - 2) Fuzz HTTP traffic: ```http GET /properties/90001 HTTP/1.1```
   - 3) Restore the server's initial state: ```http GET /properties/JSRCIRestore HTTP/1.1```
   - 4) Perform Client Insourcing ```GET /properties/JSRCIInsourcing HTTP/1.1```
-- After replaying the HTTP traffic, JS-RCI automatcally generates and executes a contraints solving script [results/result_datalog.py](results/result_datalog.py) for executing the ```Marshal```, ```unMarshal```, and ```ExecutedStmts``` rules. Finally, JS-RCI generates a semantically equivalent centralized variant (in multiple JavaScript files), automatically extracted from the server.
+- After replaying the HTTP traffic, JS-RCI automatcally generates and executes a contraints solving script [results/example1/result_datalog.py](results/example1/result_datalog.py) for executing the ```Marshal```, ```unMarshal```, and ```ExecutedStmts``` rules. Finally, JS-RCI generates a semantically equivalent centralized variant (in multiple JavaScript files), automatically extracted from the server.
 
 - You can skip steps 1 and 2 by running only the contraint solving python script.
 ```bash

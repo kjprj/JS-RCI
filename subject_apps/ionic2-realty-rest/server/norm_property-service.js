@@ -1,6 +1,8 @@
-//var dummyvar;
+//JS-RCI
+var dummyvar1="sfasfasf";
+var dummyvar;
 var PROPERTIES = require('./mock-properties').data;
-//var favorites = [];
+var favorites = [];
 
 function findAll(req, res, next) {
 //    console.log(1);
@@ -17,8 +19,7 @@ function findById(req, res, next) {
     var tmpv1 = temp6;
     res.json(tmpv1);
 }
-/**
-//     var tmpv10 = id - 1;
+
 function findById(req, res, next) {
      var tmpv13 = req.params;
      var id = tmpv13.id;
@@ -73,10 +74,10 @@ PROPERTIES[tmpv11].likes++;
 var tmpv9 = PROPERTIES[tmpv12].likes;
 res.json(tmpv9);
 }
-**/
+
 exports.findAll = findAll;
-//exports.findById = findById;
-//exports.getFavorites = getFavorites;
-//exports.favorite = favorite;
-//exports.unfavorite = unfavorite;
-//exports.like = like;
+exports.findById = findById;
+exports.getFavorites = getFavorites;
+exports.favorite = favorite;
+exports.unfavorite = unfavorite;
+exports.like = like;

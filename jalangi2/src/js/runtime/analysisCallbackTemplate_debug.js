@@ -111,6 +111,17 @@ jalangiLabel1026:
 		
 	}
 
+	function hasEqualinParam(obj){
+		for (var i in aaa){
+			if(underscore.isEqual(aaa[i].client_params,obj)){
+				return aaa[i].id;
+			}
+		}
+
+		return undefined;
+
+	}
+
         function getValue(v) {
             var type = typeof v;
 	   // if(type ==='number' || (type === 'string' && type === parseInt(v))) return parseInt(v);
@@ -140,7 +151,7 @@ jalangiLabel1026:
                 var end =  lineColumn(code).toIndex(aaa[4], aaa[5]);
                 var fff = code.slice(pos, end);
                 var ast_program = esprima.parse(code,{ loc: true, range: true });
-                if((typeof args[0]==='string')&& (args[0].includes("from")) ){//found sql invocation
+                if((typeof args[0]==='string')&& (args[0].includes("from")||args[0].includes("insert")||args[0].includes("update")) ){//found sql invocation
                     var sqlText = args[0].replace("?","-1");
                     var ast1 = "", tablename ="TABLE";
                     try{
@@ -148,6 +159,8 @@ jalangiLabel1026:
                         ast1 = sqlParser.astify(sqlText);
                         tablename = ast1.from[0].table;
                     } catch (e){}
+
+
                       estraverse.traverse(ast_program, {
                             enter: function (node, parent) {
                                 node.parent = parent;
@@ -161,14 +174,28 @@ jalangiLabel1026:
                                             }
                                             var ast = esprima.parse(fff,{ loc: true, range: true });
                                             if(ast.body[0].expression && ast.body[0].expression.arguments[0]){
-                                                console.log("_________________________ExpressionStatement", myparent.expression.arguments[0].params[0].name, ast.body[0].expression.arguments[0].name);
-                                                var adaptedsqlInvocation11=format("code[hashVar[\"{0}:{1}:{2}\"][\"bin\"]]=\"var {3}=alasql({4});\"",[
-                                                    aaa[1].replace(process.cwd()+"/",''),
-                                                    myparent.range[0],
-                                                    myparent.range[1],
-                                                    myparent.expression.arguments[0].params[0].name,
-                                                    ast.body[0].expression.arguments[0].name]
-                                                );
+
+
+                                                var adaptedsqlInvocation11="";
+                                                if(myparent.expression.arguments[0].params[0]){
+                                                    console.log("_________________________ExpressionStatement", myparent.expression.arguments[0].params[0].name, ast.body[0].expression.arguments[0].name);
+                                                    adaptedsqlInvocation11=format("code[hashVar[\"{0}:{1}:{2}\"][\"bin\"]]=\"var {3}=alasql({4});\"",[
+                                                        aaa[1].replace(process.cwd()+"/",''),
+                                                        myparent.range[0],
+                                                        myparent.range[1],
+                                                        myparent.expression.arguments[0].params[0].name,
+                                                        ast.body[0].expression.arguments[0].name]
+                                                    );
+                                                }else{
+                                                    console.log("_________________________ExpressionStatement", ast.body[0].expression.arguments[0].name);
+                                                    adaptedsqlInvocation11=format("code[hashVar[\"{0}:{1}:{2}\"][\"bin\"]]=\"alasql({3});\"",[
+                                                        aaa[1].replace(process.cwd()+"/",''),
+                                                        myparent.range[0],
+                                                        myparent.range[1],
+                                                       // myparent.expression.arguments[0].params[0].name,
+                                                        ast.body[0].expression.arguments[0].name]
+                                                    );
+                                                }
 
                                                     var entry ={};
                                                     entry.pos = myparent.expression.arguments[0].range[0];
@@ -180,11 +207,11 @@ jalangiLabel1026:
                                                     entry.adaptedsqlInvocation = adaptedsqlInvocation11;
                                                     var sqlInvloc = format("{0}:{1}:{2}", [aaa[1].replace(process.cwd()+"/",''),myparent.range[0], myparent.range[1]]);
                                                     J$.mashallingLog.sqlInvocationsloc.push(sqlInvloc);
-                                                    if(J$.mashallingLog.sqlInvocations.length==0)
+                                                    // if(J$.mashallingLog.sqlInvocations.length==0)
                                                         J$.mashallingLog.sqlInvocations.push(entry);
-                                                    if(sqlInvocations.length==0)
+                                                    // if(sqlInvocations.length==0)
                                                         sqlInvocations.push(entry);
-                                                console.log("adaptedsqlInvocation11", adaptedsqlInvocation11,myparent.expression.arguments[0].range);
+                                                    console.log("adaptedsqlInvocation11", adaptedsqlInvocation11,myparent.expression.arguments[0].range);
                                             }
                                             break;
                                         }
@@ -230,7 +257,7 @@ jalangiLabel1026:
             var type_val = typeof val;
             if(!aaa[1].includes("node_modules") && J$.toRollback && aaa !=null && aaa.length == 6  && type_val !=='object' && type_val !=='function' && parseInt(val)){
             if(90000<parseInt(val) && parseInt(val) <99999) {
-                    console.log("process.cwd()",process.cwd())
+                    // console.log("process.cwd()",process.cwd())
                   // if(sqlInvocations.uuid<uuid){
                       if(1==1){
                     // if(sqlInvocations.length==0 || (sqlInvocations.length==1 && sqlInvocations.uuid<uuid)){
@@ -264,6 +291,7 @@ jalangiLabel1026:
 
                         J$.mashallingLog.entry.rwfacts = entryfact;
                         console.log(colors.magenta("Entry Point Identifed"+"  WRITE(|"+val+"|)"+entryfact));
+                        console.log(colors.green(J$.mashallingLog));
                         // console.log(uuid, "<-ENTRYPOINT:",pos,end, fff,  name,location, "  WRITE(|"+val+"|)",J$.mashallingLog);
                         // entryPointMap[parseInt(val)] = location; //keep latest WRITE
                     }
@@ -283,6 +311,48 @@ jalangiLabel1026:
                           //  console.log(colors.grey(uuid, "@@@@@@@@@            >>> ENTRYPOINT:", name,location,"  WRITE(|", entryPointMap[location],"->",val,"|)"));
                 }
             }//entry points
+
+
+            else if(!aaa[1].includes("node_modules")&& J$.toRollback && aaa !=null && aaa.length == 6 && type_val ==='object' &&(hasEqualinParam(val)!=undefined)){
+
+                    // console.log(colors.magenta("Object Entry Point Identifed"));
+
+                        var code = fs.readFileSync(aaa[1]).toString();
+                        var escodegen = require('escodegen');
+                        var pos = lineColumn(code).toIndex(aaa[2], aaa[3]);
+                        var end =  lineColumn(code).toIndex(aaa[4], aaa[5]);
+                        var fff = code.slice(pos, end);
+
+                        J$.mashallingLog.entry = {};
+                        J$.mashallingLog.entry.filename =aaa[1].replace(process.cwd()+"/",'');
+                        J$.mashallingLog.entry.filnenamerange = aaa[1].replace(process.cwd()+"/",'')+":"+pos+":"+end;
+                        J$.mashallingLog.entry.range =[pos, end];
+                        J$.mashallingLog.entry.value = val;
+
+                        var ast = esprima.parse(code,{ loc: true, range: true });
+                        var identifers = [];
+                        var entryfact = "";
+                        estraverse.traverse(ast, {
+                            enter: function (node, parent) {
+                                node.parent = parent;
+                            if (node.type =="Identifier" && node.range[0]>=pos && node.range[1]<=end){
+                                // var findingnode=parent;
+                                if(parent.parent && parent.parent.type=="VariableDeclarator" && parent.parent.id.name==name) {
+                                    // console.log("EEEE", escodegen.generate(parent.parent), parent.parent.type, parent.parent.id.range);
+                                    entryfact= format("fp.fact(ref(BitVecVal(hashVar[\"{0}\"][\"bin\"],var),BitVecVal({1},val)))",[J$.mashallingLog.entry.filename+":"+parent.parent.id.range[0]+":"+parent.parent.id.range[1],polycrc.crc24(JSON.stringify(val))]);
+                                    J$.mashallingLog.entry.value_sid =polycrc.crc24(JSON.stringify(val));
+                                }
+                            }
+                        }});
+
+                        J$.mashallingLog.entry.rwfacts = entryfact;
+                        console.log(colors.magenta("Object Entry Point Identifed"+"  WRITE(|"+val+"|)"+entryfact));
+                        console.log(colors.green(J$.mashallingLog));
+                        // console.log(uuid, "<-ENTRYPOINT:",pos,end, fff,  name,location, "  WRITE(|"+val+"|)",J$.mashallingLog);
+                        // entryPointMap[parseInt(val)] = location; //keep latest WRITE
+
+
+            }
 
 
              if(!aaa[1].includes("node_modules")&& aaa !=null && aaa.length == 6  && typeof val =="string" && val == "JSRCIInsourcing"){
@@ -367,6 +437,7 @@ jalangiLabel1026:
                     J$.mashallingLog.exit.rwfacts = newexitfact;
                  // console.log(text, uuid, "->EXITPOINT:", name, location,fff, lhs, "  WRITE OJB(|", JSON.stringify(val), "|)",typeof val,  hasEqual(val), "ENTRY??   ",J$.mashallingLog);
                  console.log(colors.magenta("Exit Point Identifed"+"  WRITE(|"+JSON.stringify(val)+"|)  "+newexitfact+",,,"+name));
+                 console.log(colors.green(J$.mashallingLog));
                 //if(IsJsonFormat(val)){
 
                 // console.log(J$.entryCursor, uuid, "->EXITPOINT:", name, location, "  WRITE OJB(|", JSON.stringify(val), "|)",typeof val,  hasEqual(val));

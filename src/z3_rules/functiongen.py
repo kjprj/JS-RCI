@@ -57,13 +57,16 @@ extract_others={};
 
 for x in range(0, v_ex.num_args()):
     myposition = get_key(v_ex.arg(x).arg(1).as_long()).split(":")[1];
-    if myposition<unmarshal_stmt_start or myposition>marshal_stmt_start:
-        extract_globals[myposition]= v_ex.arg(x).arg(1).as_long();
+    #print "myposition", myposition, unmarshal_stmt_start, marshal_stmt_start , int(myposition)>=int(unmarshal_stmt_start)
+    if int(myposition)>=int(unmarshal_stmt_start) and int(myposition)<=int(marshal_stmt_start):
+        extract_ftn[int(myposition)] = int(v_ex.arg(x).arg(1).as_long());
+    #  extract_globals[myposition]= v_ex.arg(x).arg(1).as_long();
     else:
-        extract_ftn[myposition]=v_ex.arg(x).arg(1).as_long();
+        extract_globals[int(myposition)] = int(v_ex.arg(x).arg(1).as_long());
+       # extract_ftn[myposition]=v_ex.arg(x).arg(1).as_long();
 
-# print "extract_ftn", extract_ftn
-# print "extract_others", extract_others
+#print "extract_ftn", extract_ftn
+#print "extract_others", extract_globals
 
 print colored("Extracting Functions***********  ",'magenta')
 
@@ -87,19 +90,29 @@ if value_sid_unmarshal!=9114157:
     print colored("function "+uid+"(input){","yellow")
     jscode +="function "+uid+"(input){"+"\n"
     adaptedIn = adaptinput(code[unmarshal_stmt],"id")
+    if int(unmarshal_stmt) not in extract_ftn.itervalues():
+        print colored(adaptedIn, 'blue')
+        jscode += adaptedIn + "\n"
 else:
     print colored("function "+uid+"(){","yellow")
     jscode +="function "+uid+"(){"+"\n"
     adaptedIn = code[unmarshal_stmt];
 
-print colored("\t" +adaptedIn, 'blue')
-jscode +=adaptedIn+"\n"
+
 for key in sorted(extract_ftn.keys()):
     print colored("\t" + code[extract_ftn[key]], 'yellow')
     jscode += "\t"+code[extract_ftn[key]] + "\n"
 
+
 print colored(adaptoutput(code[marshal_stmt], loadedVar), 'blue')
 jscode +=adaptoutput(code[marshal_stmt], loadedVar) +"\n"
+
+
+#if int(marshal_stmt) not in extract_ftn.itervalues():
+#    print colored(adaptoutput(code[marshal_stmt], loadedVar), 'blue')
+#    jscode +=adaptoutput(code[marshal_stmt], loadedVar) +"\n"
+
+
 print colored("\treturn output;\n}","yellow")
 jscode +="\treturn output;\n}"
 
