@@ -23,7 +23,7 @@
     "esprima": "^4.0.1",
     "esrefactor": "^0.1.0",
     "estraverse": "^4.3.0",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "falafel": "^2.2.4",
     "fs-extra": "^8.1.0",
     "goreplay_middleware": "^1.0.0",
