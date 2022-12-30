@@ -32,7 +32,7 @@
     "json2csv": "^4.5.2",
     "line-column": "^1.0.2",
     "lodash": "^4.17.15",
-    "mocha": "^6.2.3",
+    "mocha": "^10.2.0",
     "mongoose": "^5.9.7",
     "node-sql-parser": "^1.7.12",
     "nodemon": "^1.19.2",
